@@ -7,12 +7,3 @@ RouteExplorer is a Progressive Web App that lets riders track every route they r
 The app also helps riders plan their next ride — offering both the fastest route to a destination and an alternative that deliberately avoids roads they've already ridden, using a custom pathfinding algorithm built on real OpenStreetMap road data.
 
 No app install needed. Just open it on your phone, press Start, and ride.
-
-# Core Features
-
-- Real-time GPS route tracking while riding
-- Map view showing all past rides as a coverage layer
-- Ride history with stats (distance, duration)
-- Route planning: fastest route to a destination
-- Route planning: undiscovered route that prioritizes roads never ridden before
-- User authentication so data is saved per rider
