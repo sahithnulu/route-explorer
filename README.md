@@ -10,10 +10,8 @@ No app install needed. Just open it on your phone, press Start, and ride.
 
 # Documentation
 
-[Product Requirement Documentation](https://github.com/sahithnulu/route-explorer/blob/main/docs/prd.md)
+[Product Requirements Document](docs/PRD.md)
 
+[Entity Relationship Diagram](docs/erd.md)
 
-[Entity Relationship Diagram](https://github.com/sahithnulu/route-explorer/blob/main/docs/erd.md.md)
-
-
-[Database Schema](https://github.com/sahithnulu/route-explorer/blob/main/docs/database_schema.md)
+[Database Schema](docs/database.md)
