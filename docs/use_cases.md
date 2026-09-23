@@ -3,6 +3,7 @@
 ### UC-1: Register
 
 **Actor:** Rider
+
 **Precondition:** User is not logged in and does not have an account
 
 **Main Success Scenario:**
@@ -23,6 +24,7 @@
 ### UC-2: Login
 
 **Actor:** Rider
+
 **Precondition:** User is not logged in but already has an account
 
 **Main Success Scenario:**
