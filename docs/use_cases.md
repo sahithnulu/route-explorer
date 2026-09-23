@@ -2,10 +2,8 @@
 
 ### UC-1: Register
 
-| Field | Details |
-|---|---|
-| Actor | Rider |
-| Precondition | User is not logged in and does not have an account |
+**Actor:** Rider
+**Precondition:** User is not logged in and does not have an account
 
 **Main Success Scenario:**
 1. User opens the app
@@ -24,10 +22,8 @@
 
 ### UC-2: Login
 
-| Field | Details |
-|---|---|
-| Actor | Rider |
-| Precondition | User is not logged in but already has an account |
+**Actor:** Rider
+**Precondition:** User is not logged in but already has an account
 
 **Main Success Scenario:**
 1. User opens the app
