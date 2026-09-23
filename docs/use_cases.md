@@ -37,4 +37,97 @@
 **Extensions:**
 - Email does not exist → show error "Email does not exist"
 - Password is incorrect → show error "Password is incorrect"
-- Token expires → app silently refreshes using refresh token
+
+---
+
+### UC-3: Track a Ride
+
+**Actor:** Rider
+
+**Precondition:** User is logged in
+
+**Main Success Scenario:**
+1. User opens the app
+2. User presses the Start button
+3. GPS begins tracking the user's location
+4. The App draws the route on the map in real time as the user rides
+5. User presses Stop
+6. Ride is saved with distance and duration
+
+**Extensions:**
+- GPS permission denied → show error asking user to enable location
+- Connection drops mid-ride → points stop saving until reconnected
+
+---
+
+### UC-4: View Ride History
+
+**Actor:** Rider
+
+**Precondition:** User is logged in and has at least one completed ride
+
+**Main Success Scenario:**
+1. User opens the app
+2. User opens the ride history panel
+3. User sees a list of past rides with date, distance, and duration
+4. User clicks a ride
+5. The route renders on the map
+
+**Extensions:**
+- No rides yet → show "No completed rides yet" message
+
+---
+
+### UC-5: View Coverage Map
+
+**Actor:** Rider
+
+**Precondition:** User is logged in and has at least one completed ride
+
+**Main Success Scenario:**
+1. User opens the app
+2. Coverage layer automatically loads on the map
+3. All roads ever ridden are highlighted
+4. User can see which areas of the city are unexplored
+
+**Extensions:**
+- No rides yet → coverage layer is empty
+
+---
+
+### UC-6: Plan Fastest Route
+
+**Actor:** Rider
+
+**Precondition:** User is logged in
+
+**Main Success Scenario:**
+1. User enters a destination on the map
+2. User clicks "Fastest Route"
+3. Dijkstra's algorithm computes the shortest path
+4. Route renders on the map in blue
+5. User sees distance and estimated time
+
+**Extensions:**
+- Destination not found → show error "Destination not found"
+- No path exists between start and destination → show error
+
+---
+
+### UC-7: Plan Undiscovered Route
+
+**Actor:** Rider
+
+**Precondition:** User is logged in
+
+**Main Success Scenario:**
+1. User enters a destination on the map
+2. User clicks "Undiscovered Route"
+3. A* algorithm computes a path prioritizing unridden roads
+4. Route renders on the map in orange alongside the fastest route
+5. User sees the percentage of the route that is undiscovered
+
+**Extensions:**
+- All roads to destination have already been ridden → returns least-ridden path
+- No path exists between start and destination → show error
+
