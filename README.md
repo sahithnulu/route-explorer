@@ -12,6 +12,8 @@ No app install needed. Just open it on your phone, press Start, and ride.
 
 [Product Requirements Document](docs/prd.md)
 
+[Use Case Scenarios](docs/use_cases.md)
+
 [Entity Relationship Diagram](docs/erd.md)
 
 [Database Schema](docs/database_schema.md)

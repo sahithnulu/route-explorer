@@ -100,13 +100,14 @@ describe('GET /rides/:id', () => {
         
     })
 
-    it('returns with 200 and a list of rides', async () => {
+    it('returns with 200 and the ride details and GeoJSON route', async () => {
         const getRideResponse = await request(app)
             .get(`/rides/${rideId}`)
             .set('Authorization', `Bearer ${accessToken}`)
-        
-        expect(getRideResponse.status).toBe(200);
-        expect(Array.isArray(getRideResponse.body)).toBe(true);
+
+        expect(getRideResponse.status).toBe(200)
+        expect(getRideResponse.body).toHaveProperty('ride')
+        expect(getRideResponse.body).toHaveProperty('geoJSON')
     })
 
     it('returns with 401 since no token is provided', async () => {
