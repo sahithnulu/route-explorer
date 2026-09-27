@@ -52,6 +52,14 @@ describe ('PATCH /rides/id/end', () => {
             expect(endRideResponse.status).toBe(200);
     })
 
+    it('returns with 404 since ride does not exist', async () => {
+        const endRideResponse = await request(app)
+            .patch(`/rides/00000000-0000-0000-0000-000000000000/end`)
+            .set('Authorization', `Bearer ${accessToken}`);
+        
+        expect(endRideResponse.status).toBe(404);
+    })
+
     it('returns with 401 since no token is provided', async () => {
         const endRideResponse = await request(app)
             .patch(`/rides/${rideId}/end`)
@@ -108,6 +116,14 @@ describe('GET /rides/:id', () => {
         expect(getRideResponse.status).toBe(200)
         expect(getRideResponse.body).toHaveProperty('ride')
         expect(getRideResponse.body).toHaveProperty('geoJSON')
+    })
+
+    it('returns with 404 since ride does not exist', async () => {
+        const getRideResponse = await request(app)
+            .get(`/rides/00000000-0000-0000-0000-000000000000`)
+            .set('Authorization', `Bearer ${accessToken}`);
+        
+        expect(getRideResponse.status).toBe(404);
     })
 
     it('returns with 401 since no token is provided', async () => {

@@ -10,7 +10,8 @@ authRouter.post('/auth/register', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // if email is missing, return a 400 error
+        // if email is missing, return 
+        // a 400 error
         if (!email) {
             return res.status(400).json({ error: 'Email is required' });
         }
@@ -37,10 +38,11 @@ authRouter.post('/auth/register', async (req, res) => {
         
         // Insert the new user into the database
         const insertResult = await pool.query('INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id', [email, hashedPassword]);
+        const userId = insertResult.rows[0].id
 
         // Generate access and refresh tokens
-        const accessToken = createAccessToken(insertResult.rows[0].id);
-        const refreshToken = createRefreshToken(insertResult.rows[0].id);
+        const accessToken = createAccessToken(userId);
+        const refreshToken = createRefreshToken(userId);
 
         return res.status(201).json({ message: 'User created successfully', accessToken, refreshToken });
 

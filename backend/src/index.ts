@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import authRouter from "./routes/auth";
+import router from './routes/routeHandler'
 
 dotenv.config();
 
@@ -16,7 +16,7 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: "ok" });
 });
 
-app.use('/', authRouter);
+app.use('/', router)
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
