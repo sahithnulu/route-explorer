@@ -1,27 +1,39 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
+import express from 'express'
+import cors from 'cors'
+import dotenv from 'dotenv'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
 import router from './routes/routeHandler'
+import { registerRideSocket } from './socket/rideSocket'
 
-dotenv.config();
+dotenv.config()
 
-const app = express();
-const port = process.env.PORT || 3000;
+const app = express()
+const httpServer = createServer(app)
+const port = process.env.PORT || 3000
 
-app.use(cors());
+const io = new Server(httpServer, {
+  cors: {
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST']
+  }
+})
 
-app.use(express.json());
+app.use(cors())
+app.use(express.json())
 
 app.get('/health', (req, res) => {
-    res.status(200).json({ status: "ok" });
-});
+  res.status(200).json({ status: 'ok' })
+})
 
 app.use('/', router)
 
+registerRideSocket(io)
+
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
+  httpServer.listen(port, () => {
+    console.log(`Server is running on port ${port}`)
+  })
 }
 
-export default app;
+export default app

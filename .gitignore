@@ -8,8 +8,7 @@ backend/node_modules/
 frontend/node_modules/
 
 #docs
-docs/checklist.html
-docs/Notes.md
+docs/Other
 
 
 # Build output

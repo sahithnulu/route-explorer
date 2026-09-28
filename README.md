@@ -8,12 +8,19 @@ The app also helps riders plan their next ride — offering both the fastest rou
 
 No app install needed. Just open it on your phone, press Start, and ride.
 
-# Documentation
+# Architecture Documentation
 
-[Product Requirements Document](docs/prd.md)
+[Product Requirements Document](docs/Architecture/prd.md)
 
-[Use Case Scenarios](docs/use_cases.md)
+[Use Case Scenarios](docs/Architecture/useCases.md)
 
-[Entity Relationship Diagram](docs/erd.md)
+[Data Flow](docs/Architecture/dataFlow.md)
 
-[Database Schema](docs/database_schema.md)
+# Database Documentation
+
+[Entity Relationship Diagram](docs/Database/erd.md)
+
+[Database Schema](docs/Database/databaseSchema.md)
+
+[PostGIS Queries](docs/Database/postgisQueries.md)
+ 
