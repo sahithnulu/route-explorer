@@ -1,12 +1,13 @@
+import path from 'path'
+import dotenv from 'dotenv'
+dotenv.config({ path: path.resolve(__dirname, '../../.env') })
+
 import express from 'express'
 import cors from 'cors'
-import dotenv from 'dotenv'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import router from './routes/routeHandler'
 import { registerRideSocket } from './socket/rideSocket'
-
-dotenv.config()
 
 const app = express()
 const httpServer = createServer(app)
