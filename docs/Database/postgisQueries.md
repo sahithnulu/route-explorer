@@ -24,7 +24,7 @@ ST_Length(ST_MakeLine(location::geometry ORDER BY sequence_number)::geography)
 
 Used when ending a ride to compute the total distance in metres.
 
-`ST_MakeLine` assembles all the individual GPS points for a ride into a single LineString, ordered by `sequence_number` so the line follows the actual path ridden. `ST_Length` then calculates the geodesic length of that line in metres — accounting for the curvature of the Earth rather than treating coordinates as flat.
+`ST_MakeLine` assembles all the individual GPS points for a ride into a single LineString, ordered by `sequence_number` so the line follows the actual path ridden. `ST_Length` then calculates the geodesic length of that line in metres, accounting for the curvature of the Earth rather than treating coordinates as flat.
 
 ---
 
