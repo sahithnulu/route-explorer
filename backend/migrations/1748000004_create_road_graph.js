@@ -6,7 +6,7 @@ exports.up = pgm => {
         osm_id: {type: 'varchar(255)'},
         name: {type: 'varchar(255)'},
         geometry: {type: 'geography(LINESTRING, 4326)', notNull: true},
-        length_meters: {type: 'float'},
+        length_metres: {type: 'float'},
     })
 }
 

@@ -19,7 +19,7 @@ const importRoads = async () => {
         const lineString = `LINESTRING(${coords})`
 
         await pool.query(
-            `INSERT INTO road_graph (osm_id, name, geometry, length_meters)
+            `INSERT INTO road_graph (osm_id, name, geometry, length_metres)
             VALUES ($1, $2, ST_GeomFromText($3, 4326)::geography, ST_Length(ST_GeomFromText($3, 4326)::geography))`,
             [element.id.toString(), element.tags?.name || null, lineString]
         )
