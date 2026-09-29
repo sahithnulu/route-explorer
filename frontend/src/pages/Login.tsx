@@ -30,13 +30,13 @@ export default function Login() {
         localStorage.setItem("refreshToken", data.refreshToken);
         navigate("/");
     } else {
-        setError(data.message || "Invalid email or password");
+        setError(data.error || "Invalid email or password");
     }
     }
 
     return (
     <div>
-        <h1>Sign In</h1>
+        <h1>Log In</h1>
 
         <form onSubmit={handleSubmit}>
         <input

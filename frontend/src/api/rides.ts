@@ -5,13 +5,13 @@ const BASE_URL = 'http://localhost:3000'
 const getToken = () => localStorage.getItem('accessToken');
 
 export const createRide = async (): Promise<{ rideId: string }> => {
-  const createRideresponse = await fetch(`${BASE_URL}/rides`, {
+  const createRideResponse = await fetch(`${BASE_URL}/rides`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${getToken()}`
     }
   })
-  return createRideresponse.json()
+  return createRideResponse.json()
 }
 
 export const endRide = async (rideId: string): Promise<Ride> => {

@@ -17,7 +17,7 @@
 | user_id | uuid | links the ride to the user who recorded it |
 | started_at | timestamp | timestamp of when the ride started |
 | ended_at | timestamp | timestamp of when the ride ended |
-| distance_meters | float | total distance of ride in metres (Computed using PostGIS) |
+| distance_meters | float | total distance of the ride in meters (computed using PostGIS) |
 | duration_seconds | integer | total duration of the ride in seconds |
 | status | varchar(20) | current status of the ride (either active or completed) |
 
@@ -39,4 +39,4 @@
 | osm_id | varchar(255) | original OpenStreetMap identifier for the road |
 | name | varchar(255) | road name (nullable since not all roads have names) |
 | geometry | geography(LINESTRING, 4326) | road segment stored as a PostGIS GEOGRAPHY(LINESTRING) type|
-| length_meters | float | length of the road segment in metres (pathfinding algorithm) |
+| length_meters | float | length of the road segment in meters (used as edge weight by the pathfinding algorithm) |

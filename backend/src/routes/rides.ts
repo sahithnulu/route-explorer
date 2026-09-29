@@ -28,7 +28,7 @@ rideRouter.patch('/rides/:id/end', authenticateToken, async (req, res) => {
         // Check if this ride exists
         const result = await pool.query('SELECT * FROM rides where id = $1', [rideId]);
         if (result.rows.length === 0) {
-            return res.status(404).json({ message: `Ride with ${rideId} not found`});
+            return res.status(404).json({ error: `Ride with id ${rideId} not found` });
         }
 
         const updatedResult = await pool.query(
@@ -46,10 +46,10 @@ rideRouter.patch('/rides/:id/end', authenticateToken, async (req, res) => {
             [rideId, userId]
         )
 
-        return res.status(200).json({ message:'Ride ended and updated succesfully', ride: updatedResult.rows[0]});
+        return res.status(200).json({ message:'Ride ended and updated successfully', ride: updatedResult.rows[0]});
 
     } catch (error) {
-        console.error('Error during ride updation', error);
+        console.error('Error during ride update', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -76,14 +76,14 @@ rideRouter.get('/rides/:id', authenticateToken, async(req, res) => {
 
         const getRidesResult = await pool.query('SELECT * FROM rides WHERE user_id = $1 AND id = $2', [userId, rideId]);
         if (getRidesResult.rows.length === 0) {
-            return res.status(404).json({ message: `Ride with ${rideId} not found`});
+            return res.status(404).json({ error: `Ride with id ${rideId} not found` });
         }
         const userRides = getRidesResult.rows[0];
 
         const getRoutePointsResult = await pool.query('SELECT ST_AsGeoJSON(location)::json AS geometry, recorded_at, sequence_number FROM route_points WHERE ride_id = $1 ORDER BY sequence_number ASC', [rideId]);
 
         return res.status(200).json({ 
-            message: `Ride with id ${rideId} retrieved succesfully`, 
+            message: `Ride with id ${rideId} retrieved successfully`, 
             ride: userRides, 
             geoJSON: {
                 type: 'FeatureCollection',

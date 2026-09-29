@@ -16,12 +16,12 @@
 **Extensions:**
 - Email already exists → show error "User already exists"
 - Email format is invalid → show error "Invalid email format"
-- Email is missing → show error "Email is missing"
-- Password is missing → show error "Password is missing"
+- Email is missing → show error "Email is required"
+- Password is missing → show error "Password is required"
 
 ---
 
-### UC-2: Login
+### UC-2: Log In
 
 **Actor:** Rider
 
@@ -31,12 +31,12 @@
 1. User opens the app
 2. User navigates to the login page
 3. User enters their email and password
-4. User clicks login
+4. User clicks log in
 5. User gets redirected to the map
 
 **Extensions:**
-- Email does not exist → show error "Email does not exist"
-- Password is incorrect → show error "Password is incorrect"
+- Email does not exist → show error "User with this email does not exist"
+- Password is incorrect → show error "Incorrect password"
 
 ---
 

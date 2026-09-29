@@ -8,8 +8,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'RouteExplorer',
-        short_name: 'RouteExplorer',
+        name: 'Route Explorer',
+        short_name: 'Route Explorer',
         theme_color: '#378ADD',
         icons: []
       }

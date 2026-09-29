@@ -30,7 +30,7 @@ export default function Register() {
         localStorage.setItem("refreshToken", data.refreshToken);
         navigate("/");
     } else {
-        setError(data.message || "Invalid email or password");
+        setError(data.error || "Invalid email or password");
     }
     }
 
@@ -61,7 +61,7 @@ export default function Register() {
         </form>
 
         <p>
-        Already have an account? <Link to="/login">Login</Link>
+        Already have an account? <Link to="/login">Log In</Link>
         </p>
     </div>
     );
