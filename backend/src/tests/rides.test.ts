@@ -78,19 +78,19 @@ describe('GET /rides', () => {
     })
 
     it('returns with 200 and a list of rides', async () => {
-        const getRideResponse = await request(app)
+        const getRidesResponse = await request(app)
             .get('/rides')
             .set('Authorization', `Bearer ${accessToken}`)
         
-        expect(getRideResponse.status).toBe(200);
-        expect(Array.isArray(getRideResponse.body)).toBe(true);
+        expect(getRidesResponse.status).toBe(200);
+        expect(Array.isArray(getRidesResponse.body)).toBe(true);
     })
 
     it('returns with 401 since no token is provided', async () => {
-        const getRideResponse = await request(app)
+        const getRidesResponse = await request(app)
             .get('/rides')
         
-        expect(getRideResponse.status).toBe(401);
+        expect(getRidesResponse.status).toBe(401);
     })
 })
 
