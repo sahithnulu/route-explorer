@@ -30,46 +30,65 @@ export const useRide = (mapRef: React.RefObject<L.Map | null>, onRideEnd: () => 
     }, [isRiding])
 
     const startRide = async () => {
-        const data = await createRide()
-        setRideId(data.rideId)
+    const data = await createRide()
+    setRideId(data.rideId)
 
-        socketRef.current = io('http://localhost:3000', { auth: { token: getToken() } })
+    socketRef.current = io('http://localhost:3000', { auth: { token: getToken() } })
 
-        polylineRef.current =  L.polyline([], { color: 'blue' }).addTo(mapRef.current!)
+    polylineRef.current = L.polyline([], { color: 'blue' }).addTo(mapRef.current!)
 
-        sequenceRef.current = 0
-        startTimeRef.current = new Date()
-        setDistance(0)
-        setElapsed('00:00')
-        setIsRiding(true)
-        simulateGPS(data.rideId, socketRef.current)
+    sequenceRef.current = 0
+    startTimeRef.current = new Date()
+    setDistance(0)
+    setElapsed('00:00')
+    setIsRiding(true)
 
-    }
+    // Wait for socket to connect before starting GPS simulation
+    socketRef.current.on('connect', () => {
+        simulateGPS(data.rideId, socketRef.current!)
+    })
+}
 
     const stopRide = async () => {
-        if (simulateRef.current) {
-            clearInterval(simulateRef.current)
-            simulateRef.current = null
-        } 
+    if (simulateRef.current) {
+        clearInterval(simulateRef.current)
+        simulateRef.current = null
+    }
 
-        socketRef.current?.disconnect()
+    socketRef.current?.disconnect()
 
-        if (rideId) await endRide(rideId)
+    polylineRef.current?.remove()
+    polylineRef.current = null
 
-        setIsRiding(false)
-        setRideId(null)
+    if (rideId) await endRide(rideId)
 
-        onRideEnd()
+    setIsRiding(false)
+    setRideId(null)
 
+    onRideEnd()
     }
 
     const simulateGPS = (newRideId: string, socket: Socket) => {
     let lat = 45.4215
     let lng = -75.6972
 
+    const directions = [
+        { lat: 0.0001, lng: 0 },
+        { lat: -0.0001, lng: 0 },
+        { lat: 0, lng: 0.0001 },
+        { lat: 0, lng: -0.0001 },
+        { lat: 0.0001, lng: 0.0001 },
+        { lat: 0.0001, lng: -0.0001 },
+    ]
+
+    let dirIndex = 0
+
     simulateRef.current = setInterval(() => {
-        lat += 0.0001
-        lng += 0.0001
+        if (Math.random() < 0.1) {
+        dirIndex = Math.floor(Math.random() * directions.length)
+        }
+        lat += directions[dirIndex].lat
+        lng += directions[dirIndex].lng
 
         const point: L.LatLngTuple = [lat, lng]
         polylineRef.current?.addLatLng(point)

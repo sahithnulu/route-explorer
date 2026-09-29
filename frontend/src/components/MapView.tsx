@@ -9,7 +9,7 @@ const MapView = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
 
-  const { loadCoverage } = useCoverage(mapRef)
+  const { loadCoverage, hideCoverage } = useCoverage(mapRef)
   const { isRiding, elapsed, distance, startRide, stopRide } = useRide(mapRef, loadCoverage)
 
   useEffect(() => {
@@ -57,7 +57,7 @@ const MapView = () => {
           {isRiding ? 'Stop Ride' : 'Start Ride'}
         </button>
       </div>
-      {!isRiding && <RideHistory mapRef={mapRef} />}
+      {!isRiding && <RideHistory mapRef={mapRef} onViewRide={hideCoverage} onClose={loadCoverage} />}
     </div>
   )
 }

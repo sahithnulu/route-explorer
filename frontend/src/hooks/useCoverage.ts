@@ -27,5 +27,12 @@ export const useCoverage = (mapRef: React.RefObject<L.Map | null>) => {
         }
     }
 
-    return { loadCoverage }
+    const hideCoverage = () => {
+    if (coverageLayerRef.current) {
+        mapRef.current?.removeLayer(coverageLayerRef.current)
+        coverageLayerRef.current = null
+    }
+    }
+
+    return { loadCoverage, hideCoverage }
 }

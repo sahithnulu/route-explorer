@@ -5,6 +5,8 @@ import type { Ride } from '../types'
 
 interface RideHistoryProps {
   mapRef: React.RefObject<L.Map | null>
+  onViewRide: () => void
+  onClose: () => void
 }
 
 const formatDuration = (seconds: number) => {
@@ -13,7 +15,7 @@ const formatDuration = (seconds: number) => {
   return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
 }
 
-const RideHistory = ({ mapRef }: RideHistoryProps) => {
+const RideHistory = ({ mapRef, onViewRide, onClose }: RideHistoryProps) => {
   const [showHistory, setShowHistory] = useState(false)
   const [rides, setRides] = useState<Ride[]>([])
   const [selectedLayer, setSelectedLayer] = useState<L.Polyline | null>(null)
@@ -24,7 +26,18 @@ const RideHistory = ({ mapRef }: RideHistoryProps) => {
     setRides(data)
   }
 
+  const handleClose = () => {
+    if (selectedLayer) {
+      mapRef.current?.removeLayer(selectedLayer)
+      setSelectedLayer(null)
+    }
+    setShowHistory(false)
+    onClose()
+  }
+
   const viewRideOnMap = async (rideId: string) => {
+    
+    onViewRide()
 
     const data = await getRide(rideId)
 
@@ -70,7 +83,7 @@ const RideHistory = ({ mapRef }: RideHistoryProps) => {
           }}>
             <h3 style={{ margin: 0 }}>Ride History</h3>
             <button
-              onClick={() => setShowHistory(false)}
+              onClick={handleClose}
               style={{ border: 'none', background: '#f0f0f0', fontSize: '18px', cursor: 'pointer', padding: '4px 10px', borderRadius: '4px' }}
             >
               ✕
