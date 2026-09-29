@@ -22,9 +22,9 @@ Used when inserting a GPS point into the `route_points` table.
 ST_Length(ST_MakeLine(location::geometry ORDER BY sequence_number)::geography)
 ```
 
-Used when ending a ride to compute the total distance in meters.
+Used when ending a ride to compute the total distance in metres.
 
-`ST_MakeLine` assembles all the individual GPS points for a ride into a single LineString, ordered by `sequence_number` so the line follows the actual path ridden. `ST_Length` then calculates the geodesic length of that line in meters, accounting for the curvature of the Earth rather than treating coordinates as flat.
+`ST_MakeLine` assembles all the individual GPS points for a ride into a single LineString, ordered by `sequence_number` so the line follows the actual path ridden. `ST_Length` then calculates the geodesic length of that line in metres, accounting for the curvature of the Earth rather than treating coordinates as flat.
 
 ---
 
@@ -48,4 +48,4 @@ ST_Union(ST_Buffer(location::geometry, 0.0001))
 
 Used when computing the coverage layer showing all roads a rider has ever ridden.
 
-`ST_Buffer` expands each GPS point into a small circle with a radius of 0.0001 degrees (approximately 10 meters), approximating the width of a road. `ST_Union` then merges all those circles into a single polygon. The result is a coverage shape that fills in the roads the rider has traveled, which is then returned as GeoJSON and rendered as a semi-transparent overlay on the map.
+`ST_Buffer` expands each GPS point into a small circle with a radius of 0.0001 degrees (approximately 10 metres), approximating the width of a road. `ST_Union` then merges all those circles into a single polygon. The result is a coverage shape that fills in the roads the rider has traveled, which is then returned as GeoJSON and rendered as a semi-transparent overlay on the map.

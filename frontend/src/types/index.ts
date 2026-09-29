@@ -3,7 +3,7 @@ export interface Ride {
     user_id: string,
     started_at: string,
     ended_at: string | null,
-    distance_meters: number | null,
+    distance_metres: number | null,
     duration_seconds: number | null,
     status: 'active' | 'completed'
 }

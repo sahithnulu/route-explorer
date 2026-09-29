@@ -97,7 +97,7 @@ const RideHistory = ({ mapRef }: RideHistoryProps) => {
                   })}
                 </div>
                 <div style={{ fontSize: '13px', color: '#666', display: 'flex', gap: '12px' }}>
-                  <span>📍 {ride.distance_meters ? (ride.distance_meters / 1000).toFixed(2) : '0.00'} km</span>
+                  <span>📍 {ride.distance_metres ? (ride.distance_metres / 1000).toFixed(2) : '0.00'} km</span>
                   <span>⏱ {ride.duration_seconds ? formatDuration(ride.duration_seconds) : '00:00'}</span>
                 </div>
               </div>

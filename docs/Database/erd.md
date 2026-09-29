@@ -14,7 +14,7 @@ uuid id PK
 uuid user_id FK
 timestamp started_at
 timestamp ended_at
-float distance_meters
+float distance_metres
 integer duration_seconds
 varchar status
 }
@@ -32,7 +32,7 @@ uuid id PK
 varchar osm_id
 varchar name
 geography geometry
-float length_meters
+float length_metres
 }
     USERS ||--o{ RIDES : "has many"
     RIDES ||--o{ ROUTE_POINTS : "has many"

@@ -36,7 +36,7 @@ rideRouter.patch('/rides/:id/end', authenticateToken, async (req, res) => {
             SET status = 'completed',
                 ended_at = NOW(),
                 duration_seconds = EXTRACT(EPOCH FROM (NOW() - started_at))::integer,
-                distance_meters = (
+                distance_metres = (
                     SELECT ST_Length(ST_MakeLine(location::geometry ORDER BY sequence_number)::geography)
                     FROM route_points
                     WHERE ride_id = $1
