@@ -43,12 +43,3 @@ export const getRide = async (rideId: string): Promise<{ ride: Ride, geoJSON: Ge
     })
     return getRideResponse.json()
 }
-
-export const getCoverage = async (): Promise<GeoJSONFeatureCollection> => {
-  const res = await fetch(`${BASE_URL}/coverage`, {
-    headers: {
-      Authorization: `Bearer ${getToken()}`
-    }
-  })
-  return res.json()
-}

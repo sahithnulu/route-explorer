@@ -1,16 +1,23 @@
 import { useEffect, useRef } from "react";
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-
+import { useRide } from "../hooks/useRide";
+import { useCoverage } from "../hooks/useCoverage";
+import RideHistory from "./RideHistory";
 
 const MapView = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
 
+  const { loadCoverage } = useCoverage(mapRef)
+  const { isRiding, elapsed, distance, startRide, stopRide } = useRide(mapRef, loadCoverage)
+
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return
 
     mapRef.current = L.map(mapContainerRef.current).setView([45.4215, -75.6972], 13)
+
+    loadCoverage()
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
@@ -21,12 +28,38 @@ const MapView = () => {
       mapRef.current = null
     }
   }, [])
-    return (
-    <div
-      ref={mapContainerRef}
-      style={{ width: '100vw', height: '100vh' }}
-    />
-  );
+  return (
+    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+      <div ref={mapContainerRef} style={{ width: '100%', height: '100%' }} />
+
+      {isRiding && (
+        <div style={{
+          position: 'absolute', top: 16, left: '50%', transform: 'translateX(-50%)',
+          background: 'rgba(0,0,0,0.7)', color: '#fff', padding: '8px 20px',
+          borderRadius: '20px', display: 'flex', gap: '24px', zIndex: 1000, fontSize: '14px'
+        }}>
+          <span>⏱ {elapsed}</span>
+          <span>📍 {(distance / 1000).toFixed(2)} km</span>
+        </div>
+      )}
+
+      <div style={{
+        position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)', zIndex: 1000
+      }}>
+        <button
+          onClick={isRiding ? stopRide : startRide}
+          style={{
+            padding: '14px 40px', fontSize: '16px', fontWeight: 600,
+            background: isRiding ? '#e53e3e' : '#378ADD',
+            color: '#fff', border: 'none', borderRadius: '30px', cursor: 'pointer'
+          }}
+        >
+          {isRiding ? 'Stop Ride' : 'Start Ride'}
+        </button>
+      </div>
+      {!isRiding && <RideHistory mapRef={mapRef} />}
+    </div>
+  )
 }
 
 export default MapView;
