@@ -13,7 +13,10 @@ export class MinHeap {
     }
 
     public dequeue(): { node: string; distance: number } | null {
-        if (this.isEmpty()) return null
+        if (this.isEmpty()) {
+            return null
+        }
+        
         this.swap(0, this.heap.length - 1)
         const min = this.heap.pop()!
         this.bubbleDown(0)
