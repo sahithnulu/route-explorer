@@ -1,3 +1,6 @@
+// Min-heap priority queue used by Dijkstra and A* algorithms
+// Always returns the element with the smallest distance value
+// Insert and extract-min are both O(log n) which is more efficient than a sorted array O(n log n)
 export class MinHeap {
     private heap: { node: string; distance: number }[] = []
 
@@ -7,11 +10,13 @@ export class MinHeap {
     this.heap[j] = temp
     }
 
+    // Adds a new element to the heap and restores the heap property
     public enqueue(item: { node: string; distance: number }): void {
         this.heap.push(item)
         this.bubbleUp(this.heap.length - 1)
     }
 
+    // Removes and returns the element with the smallest distance and restores the heap property
     public dequeue(): { node: string; distance: number } | null {
         if (this.isEmpty()) {
             return null
@@ -27,6 +32,8 @@ export class MinHeap {
         return this.heap.length === 0
     }
 
+    // Restores heap property upward after an insert
+    // Keeps swapping with parent while current node is smaller than its parent
     private bubbleUp(i: number): void {
         while (i > 0) {
             let parentIndex = this.parentIndex(i)
@@ -42,6 +49,8 @@ export class MinHeap {
 
     }
 
+    // Restores heap property downward after a removal
+    // Keeps swapping with the smaller child while current node is larger than its children
     private bubbleDown(i: number): void {
     while (true) {
         let leftChildIndex = this.leftChildIndex(i)

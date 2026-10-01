@@ -4,6 +4,7 @@ import { authenticateToken } from "../middleware/auth";
 
 const rideRouter = express.Router()
 
+// Create a new active ride for the authenticated user
 rideRouter.post('/rides', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.userId
@@ -20,6 +21,9 @@ rideRouter.post('/rides', authenticateToken, async (req, res) => {
     }
 })
 
+// Marks ride as completed, computes:
+// - distance_metres using PostGIS ST_Length(ST_MakeLine(route_points))
+// - duration_seconds as difference between started_at and NOW()
 rideRouter.patch('/rides/:id/end', authenticateToken, async (req, res) => {
     try {
         const rideId = req.params.id
@@ -54,6 +58,7 @@ rideRouter.patch('/rides/:id/end', authenticateToken, async (req, res) => {
     }
 });
 
+// Returns all rides for the authenticated user, newest first
 rideRouter.get('/rides', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.userId
@@ -69,6 +74,8 @@ rideRouter.get('/rides', authenticateToken, async(req, res) => {
     }
 });
 
+// Returns ride details + all GPS points as a GeoJSON FeatureCollection
+// Used by RideHistory to draw a past route on the map
 rideRouter.get('/rides/:id', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.userId
@@ -104,6 +111,9 @@ rideRouter.get('/rides/:id', authenticateToken, async(req, res) => {
     }
 });
 
+// Returns all GPS points for all rides merged into a single GeoJSON polygon
+// Uses ST_Union to merge, ST_Buffer to expand points to approximate road width
+// Used to show the coverage layer on the map
 rideRouter.get('/coverage', authenticateToken, async(req, res) => {
     try {
         const userId = req.user.userId

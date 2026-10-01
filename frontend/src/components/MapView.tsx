@@ -6,12 +6,18 @@ import { useCoverage } from "../hooks/useCoverage";
 import RideHistory from "./RideHistory";
 
 const MapView = () => {
+  // mapContainerRef: reference to the <div> DOM element that Leaflet attaches to
+  // mapRef: holds the Leaflet map instance across re-renders without triggering them
+  // Used to add/remove layers (polylines, coverage, GeoJSON) during and after rides
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
 
   const { loadCoverage, hideCoverage } = useCoverage(mapRef)
   const { isRiding, elapsed, distance, startRide, stopRide } = useRide(mapRef, loadCoverage)
 
+  // useEffect with [], runs once after first render
+  // Initializes Leaflet map, loads coverage layer, adds OpenStreetMap tile layer
+  // Cleanup function removes the map when component unmounts
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return
 

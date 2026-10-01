@@ -5,18 +5,29 @@ import { createRide, endRide } from '../api/rides'
 
 const getToken = () => localStorage.getItem('accessToken')
 
+// Custom hook that manages all ride tracking state and logic
 export const useRide = (mapRef: React.RefObject<L.Map | null>, onRideEnd: () => void) => {
+    // isRiding: whether a ride is currently active
+    // rideId: the database ID of the current ride
+    // elapsed: formatted timer string "MM:SS"
+    // distance: total distance in metres
     const [isRiding, setIsRiding] = useState(false)
     const [rideId, setRideId] = useState<string | null>(null)
     const [elapsed, setElapsed] = useState('00:00')
     const [distance, setDistance] = useState(0)
 
+    // socketRef: Socket.io connection (persists without re-renders)
+    // polylineRef: Leaflet polyline being drawn on the map
+    // sequenceRef: GPS point counter (ensures correct ordering in database)
+    // startTimeRef: when the ride started (for elapsed time calculation)
+    // simulateRef: interval reference for the GPS simulation
     const socketRef = useRef<Socket | null>(null)
     const polylineRef = useRef<L.Polyline | null>(null)
     const sequenceRef = useRef<number>(0)
     const startTimeRef = useRef<Date | null>(null)
     const simulateRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
+    // Timer effect, updates elapsed every second while isRiding is true
     useEffect(() => {
         if (!isRiding) return
         const interval = setInterval(() => {
@@ -29,6 +40,9 @@ export const useRide = (mapRef: React.RefObject<L.Map | null>, onRideEnd: () => 
         return () => clearInterval(interval)
     }, [isRiding])
 
+    // startRide, creates ride in DB, connects socket, starts GPS simulation
+    // Waits for socket 'connect' event before starting simulation
+    // (socket connection is async, starting before connect causes rideId to be null on backend)
     const startRide = async () => {
     const data = await createRide()
     setRideId(data.rideId)
@@ -49,6 +63,7 @@ export const useRide = (mapRef: React.RefObject<L.Map | null>, onRideEnd: () => 
     })
 }
 
+    // stopRide, clears simulation, disconnects socket, removes polyline, ends ride in DB
     const stopRide = async () => {
     if (simulateRef.current) {
         clearInterval(simulateRef.current)
@@ -68,6 +83,9 @@ export const useRide = (mapRef: React.RefObject<L.Map | null>, onRideEnd: () => 
     onRideEnd()
     }
 
+    // simulateGPS — simulates GPS movement by incrementing coordinates
+    // In production this would use navigator.geolocation.watchPosition()
+    // Randomly changes direction every ~10 seconds for a more realistic path
     const simulateGPS = (newRideId: string, socket: Socket) => {
     let lat = 45.4215
     let lng = -75.6972

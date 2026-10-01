@@ -4,6 +4,11 @@ import dotenv from 'dotenv'
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') })
 import pool from '../db'
 
+// One-time script to import Ottawa road data from OpenStreetMap into the road_graph table
+// Run with: npm run import:roads
+// Data source: Overpass API query for driveable roads within Ottawa's bounding box
+// Road types: motorway, trunk, primary, secondary, tertiary
+// Result: 18,187 road segments covering ~3,360 km
 const importRoads = async () => {
   const rawData = readFileSync('./data/ottawa-roads.json', 'utf-8')
   const parsedData = JSON.parse(rawData)

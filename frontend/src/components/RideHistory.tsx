@@ -20,12 +20,14 @@ const RideHistory = ({ mapRef, onViewRide, onClose }: RideHistoryProps) => {
   const [rides, setRides] = useState<Ride[]>([])
   const [selectedLayer, setSelectedLayer] = useState<L.Polyline | null>(null)
 
+  // Fetches all completed rides from the API and updates state
   const loadRides = async () => {
     const data = await getRides()
     if (!Array.isArray(data)) return
     setRides(data)
   }
 
+  // Cleans up the selected route layer and reloads coverage when the panel closes
   const handleClose = () => {
     if (selectedLayer) {
       mapRef.current?.removeLayer(selectedLayer)
@@ -35,6 +37,9 @@ const RideHistory = ({ mapRef, onViewRide, onClose }: RideHistoryProps) => {
     onClose()
   }
 
+  // Fetches a specific ride's GPS points and draws the route on the map in red
+  // Hides coverage layer first (via onViewRide) to reduce visual clutter
+  // Fits map bounds to show the full route
   const viewRideOnMap = async (rideId: string) => {
     
     onViewRide()

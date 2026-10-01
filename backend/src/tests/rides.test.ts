@@ -1,6 +1,11 @@
 import request from 'supertest';
 import app  from '../index'
 
+// Tests for ride CRUD endpoints and coverage
+// beforeAll registers a test user and stores the access token
+// Each describe block that needs a ride creates one in its own beforeAll
+// afterAll deletes all test data (route_points → rides → user) in correct FK order
+
 let accessToken: string
 
 // Register a test user before running the tests and store the access token for use in subsequent requests

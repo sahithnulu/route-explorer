@@ -9,22 +9,25 @@ type RouteResult = {
   distance: number
 } | null
 
+// Dijkstra's algorithm, finds the shortest path between two nodes
+// Time complexity: O((V + E) log V) where V = nodes, E = edges
+// Uses a min-heap priority queue to always process the closest unvisited node first
 export const findShortestRoute = (graph: Graph, source: string, destination: string): RouteResult => {
 
-    //Intialize array with distance from source to each node
+    // distanceTo: tracks the shortest known distance from source to each node
     const distanceTo: { [node: string]: number } = {}
-
     for (const node of Object.keys(graph)) {
         distanceTo[node] = Infinity
     }
     distanceTo[source] = 0
 
-    // Initializes array which tracks which node we came from
+    // prevNode: tracks which node we came from to reconstruct the path
     const prevNode: { [node: string]: string | null } = {}
     for (const node of Object.keys(graph)) {
         prevNode[node] = null
     }
 
+    // min-heap: always dequeues the node with the smallest known distance
     let minHeap = new MinHeap
     minHeap.enqueue({node: source, distance: 0})
 
@@ -32,10 +35,12 @@ export const findShortestRoute = (graph: Graph, source: string, destination: str
         const closestNode = minHeap.dequeue()
         if (!closestNode) break
 
+        // Path reconstruction, walk backwards from destination through prevNode
         if (closestNode.node === destination) {
             const path: string[] = []
             let current: string | null = destination
             while (current) {
+                // unshift adds to front of array so path ends up in correct order (source first)
                 path.unshift(current)
                 current = prevNode[current]
             }
@@ -58,6 +63,9 @@ export const findShortestRoute = (graph: Graph, source: string, destination: str
     return null
 }
 
+// Modified Dijkstra with coverage penalty for undiscovered roads
+// Roads the user has already ridden get a 10x distance penalty
+// This makes the algorithm strongly prefer unridden roads
 export const findUndiscoveredRoute= (graph: Graph, source: string, destination: string, riddenEdges: Set<string>): RouteResult => {
 
     //Intialize array with distance from source to each node

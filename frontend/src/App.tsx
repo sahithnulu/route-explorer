@@ -5,6 +5,8 @@ import MapView from "./components/MapView";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
+// Checks if the user has a valid access token in localStorage
+// Used by ProtectedRoute and AuthRoute to determine where to redirect
 export const isAuthenticated = () => {
     if (localStorage.getItem('accessToken') !== null) {
         return true;

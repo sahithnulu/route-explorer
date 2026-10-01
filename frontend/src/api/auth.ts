@@ -1,3 +1,7 @@
+// API functions for auth endpoints
+// All functions read the access token from localStorage via getToken()
+// BASE_URL points to the backend (update this when deploying)
+
 const BASE_URL = 'http://localhost:3000'
 
 export const register = async (email: string, password: string): Promise<{ accessToken: string, refreshToken: string }> => {

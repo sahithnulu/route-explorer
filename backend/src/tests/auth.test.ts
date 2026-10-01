@@ -1,6 +1,10 @@
 import request from 'supertest';
 import app  from '../index'
 
+// Tests for authentication endpoints
+// beforeAll in login/refresh describe blocks registers a test user
+// afterAll cleans up all test users from the database
+
 describe('POST /auth/register', () => {
     it('returns with 201 and a valid JWT token', async () => {
         const response = await request(app)

@@ -6,6 +6,8 @@ import jwt from 'jsonwebtoken';
 
 const authRouter = express.Router();
 
+// Creates a new user account, hashes the password with bcrypt,
+// and returns both an access token and refresh token
 authRouter.post('/auth/register', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -53,6 +55,7 @@ authRouter.post('/auth/register', async (req, res) => {
 
 });
 
+// Verifies email and password, returns both tokens if credentials are correct
 authRouter.post('/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -91,6 +94,8 @@ authRouter.post('/auth/login', async (req, res) => {
     }
 });
 
+// Verifies the refresh token and returns a new short-lived access token
+// Called automatically by the frontend when the access token expires
 authRouter.post('/auth/refresh', async (req, res) => {
     try {
         const { refreshToken } = req.body;

@@ -2,6 +2,18 @@ import { findShortestRoute, findUndiscoveredRoute} from "../algorithms/routing"
 import request from 'supertest';
 import app  from '../index'
 
+// Tests for pathfinding algorithms and route endpoints
+// First 4 tests use a hardcoded 5-node graph — no database needed
+// Last 10 tests hit the actual API endpoints
+// The hardcoded graph:
+//   A --10-- B --5-- C
+//   |               |
+//   15              8
+//   |               |
+//   D ------12----- E
+// Shortest A→C: A→B→C (distance 15)
+// With B-C penalized: A→D→E→C (distance 35)
+
 let accessToken: string
 
 // Register a test user before running the tests and store the access token for use in subsequent requests
