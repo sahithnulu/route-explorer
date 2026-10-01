@@ -1,4 +1,4 @@
-import { dijkstra, aStar } from "../algorithms/routing"
+import { findShortestRoute, findUndiscoveredRoute} from "../algorithms/routing"
 
 const graph = {
   A: [{ node: 'B', weight: 10 }, { node: 'D', weight: 15 }],
@@ -8,15 +8,15 @@ const graph = {
   E: [{ node: 'D', weight: 12 }, { node: 'C', weight: 8 }],
 }
 
-describe('Dijkstra', () => {
+describe('findShortestRoute', () => {
     it('find the shortest path from A to C', () => {
-        const result = dijkstra(graph, 'A', 'C')
+        const result = findShortestRoute(graph, 'A', 'C')
         expect(result?.path).toEqual(['A', 'B', 'C'])
         expect(result?.distance).toBe(15)
     })
 
     it('return null when no path exists',  () => {
-        const result = dijkstra(graph, 'A', 'Z')
+        const result = findShortestRoute(graph, 'A', 'Z')
         expect(result).toBeNull()
     })
 })
@@ -24,12 +24,12 @@ describe('Dijkstra', () => {
 describe('A*', () => {
     it('find the shortest path from A to C', () => {
         const riddenEdges = new Set(['B-C', 'C-B'])
-        const result = aStar(graph, 'A', 'C', riddenEdges)
+        const result = findUndiscoveredRoute(graph, 'A', 'C', riddenEdges)
         expect(result?.path).toEqual(['A', 'D', 'E', 'C'])
     })
 
     it('return null when no path exists',  () => {
-        const result = aStar(graph, 'A', 'Z', new Set())
+        const result = findUndiscoveredRoute(graph, 'A', 'Z', new Set())
         expect(result).toBeNull()
     })
 })
