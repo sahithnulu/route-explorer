@@ -23,7 +23,7 @@ const io = new Server(httpServer, {
   }
 })
 
-app.use(cors())
+app.use(cors({ origin: process.env.ALLOWED_ORIGIN || 'http://localhost:5173' }))
 // Parse JSON request bodies
 app.use(express.json())
 

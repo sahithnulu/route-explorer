@@ -2,7 +2,7 @@
 // All functions read the access token from localStorage via getToken()
 // BASE_URL points to the backend (update this when deploying)
 
-const BASE_URL = 'http://localhost:3000'
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 export const register = async (email: string, password: string): Promise<{ accessToken: string, refreshToken: string }> => {
     const registerResponse = await fetch(`${BASE_URL}/auth/register`, {

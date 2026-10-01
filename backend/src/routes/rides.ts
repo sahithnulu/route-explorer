@@ -29,12 +29,6 @@ rideRouter.patch('/rides/:id/end', authenticateToken, async (req, res) => {
         const rideId = req.params.id
         const userId = req.user.userId
 
-        // Check if this ride exists
-        const result = await pool.query('SELECT * FROM rides where id = $1', [rideId]);
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: `Ride with id ${rideId} not found` });
-        }
-
         const updatedResult = await pool.query(
             `UPDATE rides 
             SET status = 'completed',
@@ -49,6 +43,10 @@ rideRouter.patch('/rides/:id/end', authenticateToken, async (req, res) => {
             RETURNING *`,
             [rideId, userId]
         )
+
+        if (updatedResult.rows.length === 0) {
+            return res.status(404).json({ error: `Ride with id ${rideId} not found` })
+        }
 
         return res.status(200).json({ message:'Ride ended and updated successfully', ride: updatedResult.rows[0]});
 

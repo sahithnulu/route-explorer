@@ -1,5 +1,5 @@
-import redis from './redis'
-import pool from './db'
+import redis from '../redis'
+import pool from '../db'
 
 // Loads the Ottawa road graph, checks Redis cache first, falls back to PostgreSQL
 // The graph is an adjacency list: { nodeId: [{ node, weight }, ...] }

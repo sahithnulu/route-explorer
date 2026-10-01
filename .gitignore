@@ -1,6 +1,7 @@
 # Environment
 .env
 .env.test
+frontend/.env
 
 # Dependencies
 node_modules/

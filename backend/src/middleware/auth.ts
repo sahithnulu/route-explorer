@@ -16,8 +16,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     if (!authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ error: 'Invalid authorization header format' });
     }
-
-    // Extract the token after "Bearer "
+    
     const token = authHeader.split(' ')[1];
 
     if (!token) {
@@ -25,8 +24,9 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_secret');
-        // Attach decoded payload (contains userId) to req so route handlers can use it
+        const secret = process.env.JWT_SECRET
+        if (!secret) throw new Error('JWT_SECRET environment variable is not set')
+        const decoded = jwt.verify(token, secret)
         req.user = decoded;
         next();
     } catch (err) {

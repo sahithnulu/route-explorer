@@ -47,7 +47,7 @@ export const useRide = (mapRef: React.RefObject<L.Map | null>, onRideEnd: () => 
     const data = await createRide()
     setRideId(data.rideId)
 
-    socketRef.current = io('http://localhost:3000', { auth: { token: getToken() } })
+    socketRef.current = io(import.meta.env.VITE_API_URL || 'http://localhost:3000', { auth: { token: getToken() } })
 
     polylineRef.current = L.polyline([], { color: 'blue' }).addTo(mapRef.current!)
 
