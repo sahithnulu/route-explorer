@@ -25,4 +25,4 @@ infra/terraform.tfstate
 infra/terraform.tfstate.backup
 
 # Misc
-task-definition.json
+task-definition.jsondump.rdb
