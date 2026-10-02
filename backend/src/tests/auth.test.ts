@@ -109,9 +109,13 @@ describe('POST /auth/refresh', () => {
 })
 
 afterAll(async () => {
-  const pool = (await import('../db')).default
-  await pool.query('DELETE FROM users WHERE email LIKE $1', ['%@example.com'])
-  await pool.end()
+    const pool = (await import('../db')).default
+    await pool.query('DELETE FROM users WHERE email LIKE $1', ['%@example.com'])
+    await pool.end()
+    const redis = (await import('../redis')).default
+    await redis.disconnect()
+    const { httpServer } = await import('../index')
+    httpServer.close()
 })
 
 

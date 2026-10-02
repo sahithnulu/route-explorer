@@ -158,21 +158,25 @@ describe('GET /coverage', () => {
 })
 
 afterAll(async () => {
-  const pool = (await import('../db')).default
-  
-  const user = await pool.query('SELECT id FROM users WHERE email = $1', ['ridetest@example.com'])
-  const userId = user.rows[0]?.id
-  
-  if (userId) {
-    // Delete route_points first (foreign key constraint)
-    await pool.query('DELETE FROM route_points WHERE ride_id IN (SELECT id FROM rides WHERE user_id = $1)', [userId])
-    // Then delete rides
-    await pool.query('DELETE FROM rides WHERE user_id = $1', [userId])
-    // Then delete the user
-    await pool.query('DELETE FROM users WHERE id = $1', [userId])
-  }
-  
-  await pool.end()
+    const pool = (await import('../db')).default
+    
+    const user = await pool.query('SELECT id FROM users WHERE email = $1', ['ridetest@example.com'])
+    const userId = user.rows[0]?.id
+    
+    if (userId) {
+        // Delete route_points first (foreign key constraint)
+        await pool.query('DELETE FROM route_points WHERE ride_id IN (SELECT id FROM rides WHERE user_id = $1)', [userId])
+        // Then delete rides
+        await pool.query('DELETE FROM rides WHERE user_id = $1', [userId])
+        // Then delete the user
+        await pool.query('DELETE FROM users WHERE id = $1', [userId])
+    }
+    
+    await pool.end()
+    const redis = (await import('../redis')).default
+    await redis.disconnect()
+    const { httpServer } = await import('../index')
+    httpServer.close()
 })
 
 

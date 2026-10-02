@@ -1,6 +1,7 @@
 import { findShortestRoute, findUndiscoveredRoute} from "../algorithms/routing"
 import request from 'supertest';
 import app  from '../index'
+import redis from "../redis";
 
 // Tests for pathfinding algorithms and route endpoints
 // First 4 tests use a hardcoded 5-node graph — no database needed
@@ -179,19 +180,22 @@ describe('POST /routes/undiscovered', () => {
 })
 
 afterAll(async () => {
-  const pool = (await import('../db')).default
-  
-  const user = await pool.query('SELECT id FROM users WHERE email = $1', ['routetest@example.com'])
-  const userId = user.rows[0]?.id
-  
-  if (userId) {
-    // Delete route_points first (foreign key constraint)
-    await pool.query('DELETE FROM route_points WHERE ride_id IN (SELECT id FROM rides WHERE user_id = $1)', [userId])
-    // Then delete rides
-    await pool.query('DELETE FROM rides WHERE user_id = $1', [userId])
-    // Then delete the user
-    await pool.query('DELETE FROM users WHERE id = $1', [userId])
-  }
-  
-  await pool.end()
+    const pool = (await import('../db')).default
+    
+    const user = await pool.query('SELECT id FROM users WHERE email = $1', ['routetest@example.com'])
+    const userId = user.rows[0]?.id
+    
+    if (userId) {
+        // Delete route_points first (foreign key constraint)
+        await pool.query('DELETE FROM route_points WHERE ride_id IN (SELECT id FROM rides WHERE user_id = $1)', [userId])
+        // Then delete rides
+        await pool.query('DELETE FROM rides WHERE user_id = $1', [userId])
+        // Then delete the user
+        await pool.query('DELETE FROM users WHERE id = $1', [userId])
+    }
+    
+    await redis.disconnect()
+    await pool.end()
+    const { httpServer } = await import('../index')
+    httpServer.close()
 })
