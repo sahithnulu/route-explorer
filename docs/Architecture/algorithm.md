@@ -30,6 +30,13 @@ The graph contains **18,187 road segments** covering approximately **3,360 km** 
 
 Two road segments that share an endpoint will have the same `"lng,lat"` node ID — this automatically connects them in the graph without any extra logic.
 
+The bounding box query covers:
+
+North: 45.61° — past Gatineau into Cantley/Wakefield area
+South: 45.21° — past Manotick, down to Kars/North Gower
+East: -75.15° — past Orleans, out to Cumberland/Navan
+West: -76.48° — past Gatineau into the Outaouais region
+
 ---
 
 ## Dijkstra — fastest route
