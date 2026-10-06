@@ -9,6 +9,7 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 import router from './routes/routeHandler'
 import { registerRideSocket } from './socket/rideSocket'
+import geocodeRouter from './routes/geocode'
 
 const app = express()
 // Create HTTP server wrapping Express so Socket.io can attach to it
@@ -34,6 +35,7 @@ app.get('/health', (req, res) => {
 
 // Register all route handlers (auth, rides)
 app.use('/', router)
+app.use(geocodeRouter)
 
 // Register Socket.io event handlers for real-time GPS tracking
 registerRideSocket(io)

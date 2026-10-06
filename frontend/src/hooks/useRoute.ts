@@ -1,8 +1,6 @@
 import { useState, useRef } from 'react'
 import L from 'leaflet'
-
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
-const getToken = () => localStorage.getItem('accessToken')
+import { apiFetch } from '../api/apiFetch'
 
 // Custom emoji pins with drop shadow for visibility
 const startIcon = L.divIcon({
@@ -67,12 +65,9 @@ export const useRoute = (mapRef: React.RefObject<L.Map | null>) => {
     destination: { lat: number; lng: number },
     color: string
   ): Promise<{ layer: L.Polyline; distance: number } | null> => {
-    const res = await fetch(`${BASE_URL}/routes/${endpoint}`, {
+    const res = await apiFetch(`/routes/${endpoint}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${getToken()}`
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ start, destination })
     })
 

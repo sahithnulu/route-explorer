@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import L from 'leaflet'
 import { useRoute } from '../hooks/useRoute'
 
@@ -8,12 +8,16 @@ interface RoutePlannerProps {
 
 type Location = { lat: number; lng: number; name: string }
 
-// Searches Nominatim (free OSM geocoding) for a place name
-const searchNominatim = async (query: string) => {
-  const res = await fetch(
-    `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&countrycodes=ca`,
-    { headers: { 'Accept-Language': 'en' } }
-  )
+import { apiFetch } from '../api/apiFetch'
+
+// Searches via backend proxy to avoid CORS issues with Nominatim
+// Passes user coords when available to bias results to their area
+const searchNominatim = async (query: string, userCoords: { lat: number; lng: number } | null) => {
+  let path = `/geocode?q=${encodeURIComponent(query)}`
+  if (userCoords) {
+    path += `&lat=${userCoords.lat}&lng=${userCoords.lng}`
+  }
+  const res = await apiFetch(path)
   return res.json()
 }
 
@@ -31,7 +35,22 @@ const RoutePlanner = ({ mapRef }: RoutePlannerProps) => {
   // clickMode: which pin the next map click will place ('start' or 'destination')
   const [clickMode, setClickMode] = useState<'start' | 'destination' | null>(null)
 
+  // User's current location for biasing geocode results
+  const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null)
+
+  // Debounce timer ref: prevents firing a search request on every keystroke
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   const { isLoading, error, routeStats, planRoutes, clearRoutes, setStartMarker, setDestMarker } = useRoute(mapRef)
+
+  // Silently get user location on mount to bias search results
+  useEffect(() => {
+    if (!navigator.geolocation) return
+    navigator.geolocation.getCurrentPosition(
+      pos => setUserCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      () => {} // fail silently: search still works, just unbiased
+    )
+  }, [])
 
   // Attaches a one-time map click listener when clickMode is active
   // Changes cursor to crosshair so the user knows they can click
@@ -76,20 +95,27 @@ const RoutePlanner = ({ mapRef }: RoutePlannerProps) => {
       setStart({ lat, lng, name })
       setStartQuery(name)
       setStartMarker(lat, lng)
+      setUserCoords({ lat, lng })
       mapRef.current?.setView([lat, lng], 14)
     })
   }
 
-  const searchStart = async (value: string) => {
-    setStartQuery(value)
-    if (value.length < 3) { setStartSuggestions([]); return }
-    setStartSuggestions(await searchNominatim(value))
+  // Debounced search: waits 300ms after user stops typing before hitting the API
+  const debouncedSearch = (fn: () => void) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(fn, 300)
   }
 
-  const searchDest = async (value: string) => {
+  const searchStart = (value: string) => {
+    setStartQuery(value)
+    if (value.length < 3) { setStartSuggestions([]); return }
+    debouncedSearch(async () => setStartSuggestions(await searchNominatim(value, userCoords)))
+  }
+
+  const searchDest = (value: string) => {
     setDestQuery(value)
     if (value.length < 3) { setDestSuggestions([]); return }
-    setDestSuggestions(await searchNominatim(value))
+    debouncedSearch(async () => setDestSuggestions(await searchNominatim(value, userCoords)))
   }
 
   const selectStart = (place: any) => {
@@ -136,24 +162,24 @@ const RoutePlanner = ({ mapRef }: RoutePlannerProps) => {
   return (
     <div style={{
       position: 'absolute', top: 16, left: '50%', transform: 'translateX(-50%)',
-      zIndex: 1000, width: '380px', background: 'rgba(255,255,255,0.95)',
+      zIndex: 1000, width: '480px', background: 'rgba(255,255,255,0.95)',
       borderRadius: '14px', boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
       padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px'
     }}>
 
-      {/* Start location row: search, GPS button, map click button */}
-      <div>
-        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-          <span style={{ fontSize: '18px' }}>📍</span>
-          <input
-            type="text" value={startQuery}
-            onChange={e => searchStart(e.target.value)}
-            placeholder="Start location..."
-            style={inputStyle}
-          />
-          <button onClick={useCurrentLocation} title="Use current location" style={iconBtnStyle(false)}>🎯</button>
-          <button onClick={() => setClickMode('start')} title="Click map to set start" style={iconBtnStyle(clickMode === 'start')}>🗺</button>
-        </div>
+    {/* Start location row */}
+    <div>
+      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+        <span style={{ fontSize: '18px' }}>📍</span>
+        <input
+          type="text" value={startQuery}
+          onChange={e => searchStart(e.target.value)}
+          placeholder="Start location..."
+          style={inputStyle}
+        />
+        <button onClick={useCurrentLocation} style={iconBtnStyle(false)}>Use current location</button>
+        <button onClick={() => setClickMode(prev => prev === 'start' ? null : 'start')} style={iconBtnStyle(clickMode === 'start')}>Select on map</button>
+      </div>
 
         {/* Start autocomplete suggestions */}
         {startSuggestions.length > 0 && (
@@ -168,18 +194,18 @@ const RoutePlanner = ({ mapRef }: RoutePlannerProps) => {
         )}
       </div>
 
-      {/* Destination row: search and map click button */}
-      <div>
-        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-          <span style={{ fontSize: '18px' }}>🏁</span>
-          <input
-            type="text" value={destQuery}
-            onChange={e => searchDest(e.target.value)}
-            placeholder="Search destination..."
-            style={inputStyle}
-          />
-          <button onClick={() => setClickMode('destination')} title="Click map to set destination" style={iconBtnStyle(clickMode === 'destination')}>🗺</button>
-        </div>
+    {/* Destination row */}
+    <div>
+      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+        <span style={{ fontSize: '18px' }}>🏁</span>
+        <input
+          type="text" value={destQuery}
+          onChange={e => searchDest(e.target.value)}
+          placeholder="Search destination..."
+          style={inputStyle}
+        />
+        <button onClick={() => setClickMode(prev => prev === 'destination' ? null : 'destination')} style={iconBtnStyle(clickMode === 'destination')}>Select on map</button>
+      </div>
 
         {/* Destination autocomplete suggestions */}
         {destSuggestions.length > 0 && (

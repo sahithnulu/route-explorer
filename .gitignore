@@ -27,3 +27,5 @@ infra/terraform.tfstate.backup
 # Misc
 task-definition.json
 dump.rdb
+backend/src/scripts/seedDemoData.ts
+infra/terraform.tfvars

@@ -109,7 +109,7 @@ routeRouter.post('/routes/undiscovered', authenticateToken, async (req, res) => 
         FROM road_graph rg
         WHERE ST_Intersects(
             rg.geometry,
-            (SELECT ST_Union(ST_Buffer(location::geometry, 0.0001))
+            (SELECT ST_Union(ST_Buffer(location::geometry, 0.001))
             FROM route_points rp
             JOIN rides r ON rp.ride_id = r.id
             WHERE r.user_id = $1)

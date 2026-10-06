@@ -22,10 +22,9 @@ export const useCoverage = (mapRef: React.RefObject<L.Map | null>) => {
         if (data.features.length > 0) {
             coverageLayerRef.current = L.geoJSON(data, {
                 style: {
-                    color: '#378ADD',
-                    fillColor: '#378ADD',
-                    fillOpacity: 0.2,
-                    weight: 1
+                    color: 'red',
+                    weight: 4,
+                    opacity: 0.6
                 }
             }).addTo(mapRef.current!)
         }

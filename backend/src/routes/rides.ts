@@ -72,6 +72,39 @@ rideRouter.get('/rides', authenticateToken, async(req, res) => {
     }
 });
 
+// Returns all GPS points for all rides merged into a single GeoJSON FeatureCollection
+// One LineString feature per ride, grouped by ride id to avoid connecting separate rides
+// Must be defined before /rides/:id so Express doesn't treat "coverage" as an id param
+rideRouter.get('/rides/coverage', authenticateToken, async(req, res) => {
+    try {
+        const userId = req.user.userId
+
+        const getCoverageResult = await pool.query(
+            `SELECT ST_AsGeoJSON(
+                ST_MakeLine(location::geometry ORDER BY rp.sequence_number)
+            )::json AS coverage
+            FROM route_points rp
+            JOIN rides r ON rp.ride_id = r.id
+            WHERE r.user_id = $1
+            GROUP BY r.id`,
+            [userId]
+        )
+        const features = getCoverageResult.rows
+            .filter(row => row.coverage)
+            .map(row => ({
+                type: 'Feature',
+                geometry: row.coverage,
+                properties: {}
+            }))
+
+        return res.status(200).json({ type: 'FeatureCollection', features })
+
+    } catch (error) {
+        console.error('Error while retrieving ride coverage', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+})
+
 // Returns ride details + all GPS points as a GeoJSON FeatureCollection
 // Used by RideHistory to draw a past route on the map
 rideRouter.get('/rides/:id', authenticateToken, async(req, res) => {
@@ -109,43 +142,5 @@ rideRouter.get('/rides/:id', authenticateToken, async(req, res) => {
     }
 });
 
-// Returns all GPS points for all rides merged into a single GeoJSON polygon
-// Uses ST_Union to merge, ST_Buffer to expand points to approximate road width
-// Used to show the coverage layer on the map
-rideRouter.get('/coverage', authenticateToken, async(req, res) => {
-    try {
-        const userId = req.user.userId
-
-        const getCoverageResult = await pool.query(
-            `SELECT ST_AsGeoJSON(
-                ST_Union(
-                ST_Buffer(location::geometry, 0.0001)
-                )
-            )::json AS coverage
-            FROM route_points rp
-            JOIN rides r ON rp.ride_id = r.id
-            WHERE r.user_id = $1`,
-            [userId]
-        )
-        const coverage = getCoverageResult.rows[0].coverage;
-
-        if (!coverage) {
-            return res.status(200).json({ type: 'FeatureCollection', features: [] })
-        }
-
-        return res.status(200).json({
-            type: 'FeatureCollection',
-            features: [{
-                type: 'Feature',
-                geometry: coverage,
-                properties: {}
-            }]
-        })
-
-    } catch (error) {
-        console.error('Error while retrieving ride coverage', error);
-        return res.status(500).json({ error: 'Internal server error' });      
-    }
-})
 
 export default rideRouter
