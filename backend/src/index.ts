@@ -19,7 +19,7 @@ const port = process.env.PORT || 3000
 // Socket.io server, allow connections from the frontend
 const io = new Server(httpServer, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: process.env.ALLOWED_ORIGIN || 'http://localhost:5173',
     methods: ['GET', 'POST']
   }
 })

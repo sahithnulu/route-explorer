@@ -4,7 +4,7 @@ import app  from '../index'
 // Tests for ride CRUD endpoints and coverage
 // beforeAll registers a test user and stores the access token
 // Each describe block that needs a ride creates one in its own beforeAll
-// afterAll deletes all test data (route_points → rides → user) in correct FK order
+// afterAll deletes all test data (route_points -> rides -> user) in correct FK order
 
 let accessToken: string
 
@@ -139,10 +139,10 @@ describe('GET /rides/:id', () => {
     })
 })
 
-describe('GET /coverage', () => {
+describe('GET /rides/coverage', () => {
     it('returns 200 with GeoJSON', async () => {
         const getCoverageResponse = await request(app)
-            .get('/coverage')
+            .get('/rides/coverage')
             .set('Authorization', `Bearer ${accessToken}`)
         
         expect(getCoverageResponse.status).toBe(200)
@@ -151,7 +151,7 @@ describe('GET /coverage', () => {
 
     it('returns 401 since no valid token is provided', async () =>{
         const getCoverageResponse = await request(app)
-            .get('/coverage')
+            .get('/rides/coverage')
 
         expect(getCoverageResponse.status).toBe(401);
     })
@@ -178,5 +178,3 @@ afterAll(async () => {
     const { httpServer } = await import('../index')
     httpServer.close()
 })
-
-

@@ -110,6 +110,19 @@ describe('POST /auth/refresh', () => {
 
 afterAll(async () => {
     const pool = (await import('../db')).default
+    // Delete rides first (foreign key constraint)
+    await pool.query(`
+        DELETE FROM route_points WHERE ride_id IN (
+            SELECT id FROM rides WHERE user_id IN (
+                SELECT id FROM users WHERE email LIKE $1
+            )
+        )
+    `, ['%@example.com'])
+    await pool.query(`
+        DELETE FROM rides WHERE user_id IN (
+            SELECT id FROM users WHERE email LIKE $1
+        )
+    `, ['%@example.com'])
     await pool.query('DELETE FROM users WHERE email LIKE $1', ['%@example.com'])
     await pool.end()
     const redis = (await import('../redis')).default
