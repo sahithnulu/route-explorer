@@ -17,7 +17,7 @@ const formatDuration = (seconds: number) => {
 
 const RideHistory = ({ mapRef, onViewRide, onClose }: RideHistoryProps) => {
   const [showHistory, setShowHistory] = useState(false)
-  const [rides, setRides] = useState<Ride[]>([])
+  const [rides, setRides]             = useState<Ride[]>([])
   const [selectedLayer, setSelectedLayer] = useState<L.Polyline | null>(null)
 
   // Fetches all completed rides from the API and updates state
@@ -37,84 +37,58 @@ const RideHistory = ({ mapRef, onViewRide, onClose }: RideHistoryProps) => {
     onClose()
   }
 
-  // Fetches a specific ride's GPS points and draws the route on the map in red
-  // Hides coverage layer first (via onViewRide) to reduce visual clutter
-  // Fits map bounds to show the full route
+  // Fetches a specific ride's GPS points and draws the route on the map in red.
+  // Hides coverage layer first (via onViewRide) to reduce visual clutter.
+  // Fits map bounds to show the full route.
   const viewRideOnMap = async (rideId: string) => {
-    
     onViewRide()
-
     const data = await getRide(rideId)
 
-    if (selectedLayer) {
-        mapRef.current?.removeLayer(selectedLayer)
-    }
+    if (selectedLayer) mapRef.current?.removeLayer(selectedLayer)
 
     const coords = data.geoJSON.features.map((f: any) => [
-        f.geometry.coordinates[1],  // lat
-        f.geometry.coordinates[0]   // lng
+      f.geometry.coordinates[1], // lat
+      f.geometry.coordinates[0]  // lng
     ])
 
-    const layer = L.polyline(coords, { color: 'red' }).addTo(mapRef.current!)
+    const layer = L.polyline(coords, { color: '#f87171', weight: 3 }).addTo(mapRef.current!)
     setSelectedLayer(layer)
     mapRef.current?.fitBounds(layer.getBounds())
-
   }
 
   return (
     <>
       {!showHistory && (
         <button
+          className="rh-trigger-btn"
           onClick={() => { setShowHistory(true); loadRides() }}
-          style={{
-            position: 'absolute', top: 16, right: 16, zIndex: 1000,
-            padding: '8px 16px', background: 'rgba(0,0,0,0.7)', color: '#fff',
-            border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px'
-          }}
         >
           Ride History
         </button>
       )}
 
       {showHistory && (
-        <div style={{
-          position: 'absolute', top: 0, right: 0, width: '320px', height: '100%',
-          background: '#fff', zIndex: 1001, overflowY: 'auto',
-          boxShadow: '-4px 0 12px rgba(0,0,0,0.2)'
-        }}>
-          <div style={{
-            padding: '1rem', borderBottom: '1px solid #eee',
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-          }}>
-            <h3 style={{ margin: 0 }}>Ride History</h3>
-            <button
-              onClick={handleClose}
-              style={{ border: 'none', background: '#f0f0f0', fontSize: '18px', cursor: 'pointer', padding: '4px 10px', borderRadius: '4px' }}
-            >
-              ✕
-            </button>
+        <div className="rh-panel">
+          <div className="rh-panel-header">
+            <h3>Ride History</h3>
+            <button className="rh-close-btn" onClick={handleClose}>✕</button>
           </div>
 
           {rides.length === 0 ? (
-            <p style={{ padding: '1rem', color: '#666' }}>No completed rides yet</p>
+            <p className="rh-empty">No completed rides yet.</p>
           ) : (
             rides.map(ride => (
               <div
                 key={ride.id}
+                className="rh-ride-item"
                 onClick={() => viewRideOnMap(ride.id)}
-                style={{
-                  padding: '1rem', borderBottom: '1px solid #eee',
-                  cursor: 'pointer'
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#f9f9f9')}
-                onMouseLeave={e => (e.currentTarget.style.background = '#fff')}
               >
-                <div style={{ fontWeight: 500, marginBottom: '4px' }}>
+                <div className="rh-ride-date">
                   {new Date(ride.started_at).toLocaleDateString('en-CA', {
                     weekday: 'short', month: 'short', day: 'numeric'
                   })}
                 </div>
-                <div style={{ fontSize: '13px', color: '#666', display: 'flex', gap: '12px' }}>
+                <div className="rh-ride-meta">
                   <span>📍 {ride.distance_metres ? (ride.distance_metres / 1000).toFixed(2) : '0.00'} km</span>
                   <span>⏱ {ride.duration_seconds ? formatDuration(ride.duration_seconds) : '00:00'}</span>
                 </div>

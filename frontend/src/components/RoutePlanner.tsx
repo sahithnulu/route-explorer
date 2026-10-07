@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import L from 'leaflet'
 import { useRoute } from '../hooks/useRoute'
+import { apiFetch } from '../api/apiFetch'
 
 interface RoutePlannerProps {
   mapRef: React.RefObject<L.Map | null>
@@ -8,37 +9,29 @@ interface RoutePlannerProps {
 
 type Location = { lat: number; lng: number; name: string }
 
-import { apiFetch } from '../api/apiFetch'
-
-// Searches via backend proxy to avoid CORS issues with Nominatim
-// Passes user coords when available to bias results to their area
+// Searches via backend proxy to avoid CORS issues with Nominatim.
+// Passes user coords when available to bias results to their area.
 const searchNominatim = async (query: string, userCoords: { lat: number; lng: number } | null) => {
   let path = `/geocode?q=${encodeURIComponent(query)}`
-  if (userCoords) {
-    path += `&lat=${userCoords.lat}&lng=${userCoords.lng}`
-  }
+  if (userCoords) path += `&lat=${userCoords.lat}&lng=${userCoords.lng}`
   const res = await apiFetch(path)
   return res.json()
 }
 
 const RoutePlanner = ({ mapRef }: RoutePlannerProps) => {
-  // Start location state
-  const [startQuery, setStartQuery] = useState('')
-  const [start, setStart] = useState<Location | null>(null)
+  const [startQuery, setStartQuery]           = useState('')
+  const [start, setStart]                     = useState<Location | null>(null)
   const [startSuggestions, setStartSuggestions] = useState<any[]>([])
 
-  // Destination state
-  const [destQuery, setDestQuery] = useState('')
-  const [destination, setDestination] = useState<Location | null>(null)
+  const [destQuery, setDestQuery]             = useState('')
+  const [destination, setDestination]         = useState<Location | null>(null)
   const [destSuggestions, setDestSuggestions] = useState<any[]>([])
 
-  // clickMode: which pin the next map click will place ('start' or 'destination')
-  const [clickMode, setClickMode] = useState<'start' | 'destination' | null>(null)
+  // clickMode: which pin the next map click will place
+  const [clickMode, setClickMode]             = useState<'start' | 'destination' | null>(null)
+  const [userCoords, setUserCoords]           = useState<{ lat: number; lng: number } | null>(null)
 
-  // User's current location for biasing geocode results
-  const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null)
-
-  // Debounce timer ref: prevents firing a search request on every keystroke
+  // Debounce timer: prevents firing a search request on every keystroke
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const { isLoading, error, routeStats, planRoutes, clearRoutes, setStartMarker, setDestMarker } = useRoute(mapRef)
@@ -52,11 +45,10 @@ const RoutePlanner = ({ mapRef }: RoutePlannerProps) => {
     )
   }, [])
 
-  // Attaches a one-time map click listener when clickMode is active
-  // Changes cursor to crosshair so the user knows they can click
+  // Attaches a one-time map click listener when clickMode is active.
+  // Changes cursor to crosshair so the user knows they can click.
   useEffect(() => {
     if (!mapRef.current || !clickMode) return
-
     const map = mapRef.current
     map.getContainer().style.cursor = 'crosshair'
 
@@ -73,20 +65,17 @@ const RoutePlanner = ({ mapRef }: RoutePlannerProps) => {
         setDestQuery(name)
         setDestMarker(lat, lng)
       }
-
       setClickMode(null)
       map.getContainer().style.cursor = ''
     }
 
     map.once('click', handleClick)
-
     return () => {
       map.off('click', handleClick)
       map.getContainer().style.cursor = ''
     }
   }, [clickMode])
 
-  // Gets the device's GPS location and sets it as the start point
   const useCurrentLocation = () => {
     if (!navigator.geolocation) return
     navigator.geolocation.getCurrentPosition(pos => {
@@ -100,7 +89,6 @@ const RoutePlanner = ({ mapRef }: RoutePlannerProps) => {
     })
   }
 
-  // Debounced search: waits 300ms after user stops typing before hitting the API
   const debouncedSearch = (fn: () => void) => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(fn, 300)
@@ -120,17 +108,13 @@ const RoutePlanner = ({ mapRef }: RoutePlannerProps) => {
 
   const selectStart = (place: any) => {
     const loc = { lat: parseFloat(place.lat), lng: parseFloat(place.lon), name: place.display_name }
-    setStart(loc)
-    setStartQuery(place.display_name)
-    setStartSuggestions([])
+    setStart(loc); setStartQuery(place.display_name); setStartSuggestions([])
     setStartMarker(loc.lat, loc.lng)
   }
 
   const selectDest = (place: any) => {
     const loc = { lat: parseFloat(place.lat), lng: parseFloat(place.lon), name: place.display_name }
-    setDestination(loc)
-    setDestQuery(place.display_name)
-    setDestSuggestions([])
+    setDestination(loc); setDestQuery(place.display_name); setDestSuggestions([])
     setDestMarker(loc.lat, loc.lng)
   }
 
@@ -141,141 +125,102 @@ const RoutePlanner = ({ mapRef }: RoutePlannerProps) => {
     clearRoutes()
   }
 
-  const inputStyle: React.CSSProperties = {
-    flex: 1, padding: '8px 12px', fontSize: '13px',
-    border: 'none', borderRadius: '8px', outline: 'none',
-    boxShadow: '0 1px 4px rgba(0,0,0,0.12)'
-  }
-
-  const iconBtnStyle = (active: boolean): React.CSSProperties => ({
-    padding: '6px 8px', borderRadius: '8px', border: 'none',
-    cursor: 'pointer', fontSize: '14px',
-    background: active ? '#378ADD' : '#f0f0f0',
-    color: active ? '#fff' : 'inherit'
-  })
-
-  const suggestionStyle: React.CSSProperties = {
-    padding: '8px 12px', fontSize: '12px', cursor: 'pointer',
-    borderTop: '1px solid #f0f0f0', color: '#333', background: '#fff'
-  }
-
   return (
-    <div style={{
-      position: 'absolute', top: 16, left: '50%', transform: 'translateX(-50%)',
-      zIndex: 1000, width: '480px', background: 'rgba(255,255,255,0.95)',
-      borderRadius: '14px', boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-      padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px'
-    }}>
+    <div className="app-card rp-card">
 
-    {/* Start location row */}
-    <div>
-      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-        <span style={{ fontSize: '18px' }}>📍</span>
-        <input
-          type="text" value={startQuery}
-          onChange={e => searchStart(e.target.value)}
-          placeholder="Start location..."
-          style={inputStyle}
-        />
-        <button onClick={useCurrentLocation} style={iconBtnStyle(false)}>Use current location</button>
-        <button onClick={() => setClickMode(prev => prev === 'start' ? null : 'start')} style={iconBtnStyle(clickMode === 'start')}>Select on map</button>
-      </div>
+      {/* Start location row */}
+      <div>
+        <div className="rp-row">
+          <span className="rp-icon">📍</span>
+          <input
+            className="app-input"
+            type="text"
+            value={startQuery}
+            onChange={e => searchStart(e.target.value)}
+            placeholder="Start location..."
+          />
+          <div className="rp-actions">
+            <button className="app-icon-btn" onClick={useCurrentLocation}>My location</button>
+            <button
+              className={`app-icon-btn ${clickMode === 'start' ? 'active' : ''}`}
+              onClick={() => setClickMode(prev => prev === 'start' ? null : 'start')}
+            >Pin on map</button>
+          </div>
+        </div>
 
-        {/* Start autocomplete suggestions */}
         {startSuggestions.length > 0 && (
-          <div style={{ borderRadius: '8px', overflow: 'hidden', marginTop: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+          <div className="app-suggestions">
             {startSuggestions.map((p, i) => (
-              <div key={i} onClick={() => selectStart(p)} style={suggestionStyle}
-                onMouseEnter={e => (e.currentTarget.style.background = '#f9f9f9')}
-                onMouseLeave={e => (e.currentTarget.style.background = '#fff')}
-              >{p.display_name}</div>
+              <div key={i} className="app-suggestion-item" onClick={() => selectStart(p)}>
+                {p.display_name}
+              </div>
             ))}
           </div>
         )}
       </div>
 
-    {/* Destination row */}
-    <div>
-      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-        <span style={{ fontSize: '18px' }}>🏁</span>
-        <input
-          type="text" value={destQuery}
-          onChange={e => searchDest(e.target.value)}
-          placeholder="Search destination..."
-          style={inputStyle}
-        />
-        <button onClick={() => setClickMode(prev => prev === 'destination' ? null : 'destination')} style={iconBtnStyle(clickMode === 'destination')}>Select on map</button>
-      </div>
+      {/* Destination row */}
+      <div>
+        <div className="rp-row">
+          <span className="rp-icon">🏁</span>
+          <input
+            className="app-input"
+            type="text"
+            value={destQuery}
+            onChange={e => searchDest(e.target.value)}
+            placeholder="Search destination..."
+          />
+          <div className="rp-actions">
+            <button
+              className={`app-icon-btn ${clickMode === 'destination' ? 'active' : ''}`}
+              onClick={() => setClickMode(prev => prev === 'destination' ? null : 'destination')}
+            >Pin on map</button>
+          </div>
+        </div>
 
-        {/* Destination autocomplete suggestions */}
         {destSuggestions.length > 0 && (
-          <div style={{ borderRadius: '8px', overflow: 'hidden', marginTop: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+          <div className="app-suggestions">
             {destSuggestions.map((p, i) => (
-              <div key={i} onClick={() => selectDest(p)} style={suggestionStyle}
-                onMouseEnter={e => (e.currentTarget.style.background = '#f9f9f9')}
-                onMouseLeave={e => (e.currentTarget.style.background = '#fff')}
-              >{p.display_name}</div>
+              <div key={i} className="app-suggestion-item" onClick={() => selectDest(p)}>
+                {p.display_name}
+              </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Hint shown while map click mode is active */}
       {clickMode && (
-        <div style={{ fontSize: '12px', color: '#378ADD', textAlign: 'center' }}>
+        <div className="app-hint">
           Click anywhere on the map to set {clickMode === 'start' ? 'start' : 'destination'}
         </div>
       )}
 
-      {/* Route buttons: only shown when both start and destination are set */}
       {start && destination && !clickMode && (
         <div style={{ display: 'flex', gap: '6px' }}>
           <button
+            className="app-btn app-btn-blue"
             onClick={() => planRoutes(start, destination, 'fastest')}
             disabled={isLoading}
-            style={{
-              flex: 1, padding: '9px', fontSize: '13px', fontWeight: 600,
-              background: '#378ADD', color: '#fff', border: 'none',
-              borderRadius: '8px', cursor: 'pointer', opacity: isLoading ? 0.7 : 1
-            }}
           >🔵 Fastest</button>
           <button
+            className="app-btn app-btn-orange"
             onClick={() => planRoutes(start, destination, 'undiscovered')}
             disabled={isLoading}
-            style={{
-              flex: 1, padding: '9px', fontSize: '13px', fontWeight: 600,
-              background: '#ED8936', color: '#fff', border: 'none',
-              borderRadius: '8px', cursor: 'pointer', opacity: isLoading ? 0.7 : 1
-            }}
           >🟠 Undiscovered</button>
-          <button
-            onClick={handleClear}
-            style={{
-              padding: '9px 12px', fontSize: '13px', background: '#f0f0f0',
-              border: 'none', borderRadius: '8px', cursor: 'pointer'
-            }}
-          >✕</button>
+          <button className="app-btn app-btn-ghost" style={{ flex: 'none', padding: '9px 14px' }} onClick={handleClear}>✕</button>
         </div>
       )}
 
-      {/* Route stats: distance and estimated time at 50km/h */}
       {routeStats && (
-        <div style={{
-          fontSize: '12px', color: '#555', textAlign: 'center',
-          padding: '6px 10px', background: '#f9f9f7', borderRadius: '8px'
-        }}>
-          {routeStats.mode === 'fastest' ? '🔵 Fastest' : '🟠 Undiscovered'} route:
-          {' '}<strong>{(routeStats.distance / 1000).toFixed(2)} km</strong>
-          {' '}· ~<strong>{Math.round(routeStats.distance / 1000 / 50 * 60)} min</strong>
+        <div className="app-route-stats">
+          {routeStats.mode === 'fastest' ? '🔵 Fastest' : '🟠 Undiscovered'} route:{' '}
+          <strong>{(routeStats.distance / 1000).toFixed(2)} km</strong>
+          {' '}·{' '}
+          ~<strong>{Math.round(routeStats.distance / 1000 / 50 * 60)} min</strong>
         </div>
       )}
 
-      {/* Error message */}
-      {error && (
-        <div style={{ fontSize: '13px', color: '#e53e3e', textAlign: 'center' }}>
-          {error}
-        </div>
-      )}
+      {error && <div className="app-error-text">{error}</div>}
     </div>
   )
 }
