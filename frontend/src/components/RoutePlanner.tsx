@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import L from 'leaflet'
 import { useRoute } from '../hooks/useRoute'
 import { apiFetch } from '../api/apiFetch'
+import pinImg from '../assets/Starting.png'
+import flagImg from '../assets/destination.png'
 
 interface RoutePlannerProps {
   mapRef: React.RefObject<L.Map | null>
@@ -131,7 +133,7 @@ const RoutePlanner = ({ mapRef }: RoutePlannerProps) => {
       {/* Start location row */}
       <div>
         <div className="rp-row">
-          <span className="rp-icon">📍</span>
+          <img src={pinImg} style={{ width: 24, height: 24 }} />  
           <input
             className="app-input"
             type="text"
@@ -162,7 +164,7 @@ const RoutePlanner = ({ mapRef }: RoutePlannerProps) => {
       {/* Destination row */}
       <div>
         <div className="rp-row">
-          <span className="rp-icon">🏁</span>
+          <img src={flagImg} style={{ width: 24, height: 24, filter: 'invert(1)' }} />
           <input
             className="app-input"
             type="text"

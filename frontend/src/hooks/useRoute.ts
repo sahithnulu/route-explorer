@@ -1,20 +1,20 @@
 import { useState, useRef } from 'react'
 import L from 'leaflet'
 import { apiFetch } from '../api/apiFetch'
+import pinImg from '../assets/Starting.png'
+import flagImg from '../assets/destination.png'
 
 // Custom emoji pins with drop shadow for visibility
-const startIcon = L.divIcon({
-  html: '<div style="font-size: 32px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">📍</div>',
-  className: '',
-  iconSize: [32, 32],
-  iconAnchor: [16, 32]
+const startIcon = L.icon({
+  iconUrl: pinImg,
+  iconSize: [36, 36],
+  iconAnchor: [18, 36]
 })
 
-const destIcon = L.divIcon({
-  html: '<div style="font-size: 32px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🏁</div>',
-  className: '',
-  iconSize: [32, 32],
-  iconAnchor: [16, 32]
+const destIcon = L.icon({
+  iconUrl: flagImg,
+  iconSize: [36, 36],
+  iconAnchor: [8, 36]
 })
 
 export const useRoute = (mapRef: React.RefObject<L.Map | null>) => {
