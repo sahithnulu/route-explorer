@@ -57,7 +57,6 @@ cd backend && npm test
 
 **Architecture**
 - [High-level architecture](docs/Architecture/architecture.md)
-- [System design](docs/Architecture/systemDesign.md)
 - [Product requirements](docs/Architecture/prd.md)
 - [Use case scenarios](docs/Architecture/useCases.md)
 - [Real-time GPS data flow](docs/Architecture/dataFlow.md)
