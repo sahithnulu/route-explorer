@@ -1,10 +1,7 @@
 /* ============================================================
    app.css  -  shared dark-glass tokens for the map UI
-   Imports the auth token set and adds map-specific layers.
    ============================================================ */
 
-/* Re-expose auth tokens here so map components can use them
-   without importing auth.css (which has page-level rules). */
 :root {
   --app-bg:           #080d14;
   --app-surface:      rgba(10, 17, 28, 0.94);
@@ -74,6 +71,13 @@
 }
 
 .app-logo-text span { color: var(--app-accent); }
+
+/* ── Topbar actions group ────────────────────────────────── */
+.app-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
 .app-logout-btn {
   background: var(--app-input-bg);
@@ -253,7 +257,7 @@
   bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1500;
+  z-index: 2000;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -303,36 +307,31 @@
 }
 .ride-main-btn.stop:hover { filter: brightness(1.1); }
 
-/* ── Ride History panel ──────────────────────────────────── */
-.rh-trigger-btn {
-  position: absolute;
-  top: calc(var(--topbar-h) + 12px);
-  right: 16px;
-  z-index: 1500;
-  padding: 9px 18px;
-  font-family: var(--font-display);
+/* ── Ride History trigger: topbar inline variant ─────────── */
+.rh-trigger-btn-topbar {
+  padding: 7px 14px;
+  font-family: var(--font-body);
   font-size: 13px;
-  font-weight: 700;
-  background: var(--app-surface);
+  font-weight: 500;
+  background: var(--app-input-bg);
   border: 1px solid var(--app-border);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: var(--app-fg);
-  border-radius: 9px;
+  border-radius: 8px;
+  color: var(--app-fg-muted);
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
   transition: border-color 0.18s, color 0.18s;
+  white-space: nowrap;
 }
-.rh-trigger-btn:hover {
+.rh-trigger-btn-topbar:hover {
   border-color: var(--app-accent);
-  color: var(--app-accent);
+  color: var(--app-fg);
 }
 
+/* ── Ride History panel ──────────────────────────────────── */
 .rh-panel {
-  position: absolute;
-  top: 0; right: 0;
+  position: fixed;
+  top: var(--topbar-h); right: 0;
   width: 320px;
-  height: 100%;
+  height: calc(100% - var(--topbar-h));
   background: var(--app-surface-solid);
   border-left: 1px solid var(--app-border);
   z-index: 1501;
@@ -346,7 +345,7 @@
 
 .rh-panel-header {
   padding: 16px 20px;
-  padding-top: calc(var(--topbar-h) + 16px);
+  padding-top: 16px;
   border-bottom: 1px solid var(--app-border);
   display: flex;
   justify-content: space-between;
@@ -355,22 +354,6 @@
   top: 0;
   background: var(--app-surface-solid);
   z-index: 1;
-}
-
-.rh-delete-btn {
-  background: none;
-  border: none;
-  color: var(--app-fg-muted);
-  font-size: 12px;
-  cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 5px;
-  transition: background 0.12s, color 0.12s;
-  flex-shrink: 0;
-}
-.rh-delete-btn:hover {
-  background: rgba(248, 113, 113, 0.15);
-  color: var(--app-error);
 }
 
 .rh-panel-header h3 {
@@ -424,6 +407,22 @@
   gap: 14px;
 }
 
+.rh-delete-btn {
+  background: none;
+  border: none;
+  color: var(--app-fg-muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 5px;
+  transition: background 0.12s, color 0.12s;
+  flex-shrink: 0;
+}
+.rh-delete-btn:hover {
+  background: rgba(248, 113, 113, 0.15);
+  color: var(--app-error);
+}
+
 /* ── Route planner card ──────────────────────────────────── */
 .rp-card {
   position: absolute;
@@ -455,4 +454,51 @@
 .rp-actions {
   display: flex;
   gap: 6px;
+}
+
+/* ── Mobile (600px and below) ────────────────────────────── */
+@media (max-width: 600px) {
+
+  /* Route planner: full-width strip, no float */
+  .rp-card {
+    left: 0;
+    right: 0;
+    top: var(--topbar-h);
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    padding: 10px 12px;
+    gap: 6px;
+  }
+
+  /* Stack input full-width, buttons below */
+  .rp-row {
+    flex-wrap: wrap;
+  }
+
+  .rp-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  /* Ride history panel: full width on mobile */
+  .rh-panel {
+    width: 100%;
+  }
+
+  /* Start/Stop button: above browser chrome */
+  .ride-action-wrap {
+    bottom: 32px;
+  }
+
+  /* Stats bar: compact */
+  .ride-stats-bar {
+    padding: 6px 16px;
+    gap: 16px;
+    font-size: 13px;
+  }
 }

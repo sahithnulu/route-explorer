@@ -41,7 +41,10 @@ const MapView = () => {
           <img className="app-logo-img" src={helmet} alt="RouteExplorer" />
           <span className="app-logo-text">Route<span>Explorer</span></span>
         </div>
-        <button className="app-logout-btn" onClick={logout}>Log out</button>
+        <div className="app-topbar-actions">
+          {!isRiding && <RideHistory mapRef={mapRef} onViewRide={hideCoverage} onClose={loadCoverage} />}
+          <button className="app-logout-btn" onClick={logout}>Log out</button>
+        </div>
       </header>
 
       {/* Map: fills full screen behind the topbar */}
@@ -69,7 +72,6 @@ const MapView = () => {
         </button>
       </div>
 
-      {!isRiding && <RideHistory mapRef={mapRef} onViewRide={hideCoverage} onClose={loadCoverage} />}
       {!isRiding && <RoutePlanner mapRef={mapRef} />}
 
     </div>

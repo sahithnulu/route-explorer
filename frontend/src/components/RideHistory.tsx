@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import L from 'leaflet'
 import { getRides, getRide, deleteRide } from '../api/rides'
 import type { Ride } from '../types'
@@ -69,54 +70,60 @@ const RideHistory = ({ mapRef, onViewRide, onClose }: RideHistoryProps) => {
     mapRef.current?.fitBounds(layer.getBounds())
   }
 
+  // Panel rendered via portal so it escapes the topbar DOM and positions correctly
+  const panel = showHistory && createPortal(
+    <div className="rh-panel">
+      <div className="rh-panel-header">
+        <h3>Ride History</h3>
+        <button className="rh-close-btn" onClick={handleClose}>✕</button>
+      </div>
+
+      {rides.length === 0 ? (
+        <p className="rh-empty">No completed rides yet.</p>
+      ) : (
+        rides.map(ride => (
+          <div
+            key={ride.id}
+            className="rh-ride-item"
+            onClick={() => viewRideOnMap(ride.id)}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div className="rh-ride-date">
+                {new Date(ride.started_at).toLocaleDateString('en-CA', {
+                  weekday: 'short', month: 'short', day: 'numeric'
+                })}
+              </div>
+              <button
+                className="rh-delete-btn"
+                onClick={e => handleDelete(e, ride.id)}
+                title="Delete ride"
+              >✕</button>
+            </div>
+            <div className="rh-ride-meta">
+              <span>📍 {ride.distance_metres ? (ride.distance_metres / 1000).toFixed(2) : '0.00'} km</span>
+              <span>⏱ {ride.duration_seconds ? formatDuration(ride.duration_seconds) : '00:00'}</span>
+            </div>
+          </div>
+        ))
+      )}
+    </div>,
+    document.body
+  )
+
   return (
     <>
-      {!showHistory && (
-        <button
-          className="rh-trigger-btn"
-          onClick={() => { setShowHistory(true); loadRides() }}
-        >
-          Ride History
-        </button>
-      )}
+      {/* Trigger button: always visible in topbar, toggles panel */}
+      <button
+        className="rh-trigger-btn-topbar"
+        onClick={() => {
+          if (showHistory) handleClose()
+          else { setShowHistory(true); loadRides() }
+        }}
+      >
+        Ride History
+      </button>
 
-      {showHistory && (
-        <div className="rh-panel">
-          <div className="rh-panel-header">
-            <h3>Ride History</h3>
-            <button className="rh-close-btn" onClick={handleClose}>✕</button>
-          </div>
-
-          {rides.length === 0 ? (
-            <p className="rh-empty">No completed rides yet.</p>
-          ) : (
-            rides.map(ride => (
-              <div
-                key={ride.id}
-                className="rh-ride-item"
-                onClick={() => viewRideOnMap(ride.id)}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div className="rh-ride-date">
-                    {new Date(ride.started_at).toLocaleDateString('en-CA', {
-                      weekday: 'short', month: 'short', day: 'numeric'
-                    })}
-                  </div>
-                  <button
-                    className="rh-delete-btn"
-                    onClick={e => handleDelete(e, ride.id)}
-                    title="Delete ride"
-                  >✕</button>
-                </div>
-                <div className="rh-ride-meta">
-                  <span>📍 {ride.distance_metres ? (ride.distance_metres / 1000).toFixed(2) : '0.00'} km</span>
-                  <span>⏱ {ride.duration_seconds ? formatDuration(ride.duration_seconds) : '00:00'}</span>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      )}
+      {panel}
     </>
   )
 }
