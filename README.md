@@ -8,7 +8,7 @@ The app also helps riders plan their next ride, offering both the fastest route 
 
 No app install needed. Just open it on your phone, press Start, and ride.
 
-**[Live Demo](https://route-explorer.online/)** — log in with `demo@routeexplorer.com` / `password123`
+**[Live Demo](https://route-explorer.online/)** —> log in with `demo@routeexplorer.com` / `password123`
 
 ---
 
@@ -57,7 +57,6 @@ cd backend && npm test
 
 **Architecture**
 - [High-level architecture](docs/Architecture/architecture.md)
-- [AWS infrastructure](docs/Architecture/infrastructure.md)
 - [System design](docs/Architecture/systemDesign.md)
 - [Product requirements](docs/Architecture/prd.md)
 - [Use case scenarios](docs/Architecture/useCases.md)

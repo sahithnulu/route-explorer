@@ -52,3 +52,10 @@ graph TB
 **RDS in private subnet**: Stores users, rides, GPS route points, and the road graph. PostGIS handles all spatial queries like distance calculation, line construction, and geographic point storage. The database is not publicly accesible. Only the ECS task can reach it from within the same VPC
 
 **ElastiCache Redis in private subnet**: Caches the road graph adjacency list loaded from PostgreSQL. The graph is ~18,000 nodes and expensive to rebuild from SQL on every request. Redis keeps it in memory and shares it across all ECS instances. Same isolation as RDS
+
+## Known limitations
+
+- **No turn restrictions**: OSM encodes one-way streets and turn restrictions but the current implementation treats all roads as bidirectional
+- **Static road graph**: the graph is a snapshot of OSM data. New roads aren't reflected until the import script is re-run manually
+- **Single ECS instance**: desired count is set to 1. Scaling to multiple instances works without code changes since the road graph is shared via Redis, but has not been tested
+- **Socket.io auth**: the WebSocket connection does not verify the JWT on connection (any client can emit GPS points to any ride ID)
