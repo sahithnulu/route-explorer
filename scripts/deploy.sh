@@ -60,6 +60,7 @@ fi
 if [ "$DEPLOY_FRONTEND" = true ]; then
   echo "==> Building frontend"
   cd frontend
+  npm ci
   VITE_API_URL="$VITE_API_URL" npm run build
   cd ..
 
