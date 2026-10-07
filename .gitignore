@@ -28,4 +28,5 @@ infra/terraform.tfvars
 # Misc
 task-definition.json
 dump.rdb
-backend/src/scripts/seedDemoData.tsbackend/data/ottawa-roads.json
+backend/src/scripts/seedDemoData.ts
+backend/data/ottawa-roads.json

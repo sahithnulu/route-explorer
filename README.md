@@ -8,21 +8,64 @@ The app also helps riders plan their next ride — offering both the fastest rou
 
 No app install needed. Just open it on your phone, press Start, and ride.
 
-[Live Demo](https://route-explorer.online/)
+**[Live Demo](https://route-explorer.online/)** — log in with `demo@routeexplorer.com` / `password123`
 
-# Architecture Documentation
+---
 
-[Product Requirements Document](docs/Architecture/prd.md)
+## Tech stack
 
-[Use Case Scenarios](docs/Architecture/useCases.md)
+| Layer | Technology |
+|---|---|
+| Frontend | React + Vite + TypeScript, Leaflet, Socket.io client |
+| Backend | Express + TypeScript, Socket.io |
+| Database | PostgreSQL + PostGIS |
+| Cache | Redis |
+| Infrastructure | AWS (ECS Fargate, RDS, ElastiCache, ALB, S3, CloudFront) |
+| IaC | Terraform |
+| CI/CD | GitHub Actions |
 
-[Data Flow](docs/Architecture/dataFlow.md)
+---
 
-# Database Documentation
+## Local setup
 
-[Entity Relationship Diagram](docs/Database/erd.md)
+### Prerequisites
 
-[Database Schema](docs/Database/databaseSchema.md)
+- Docker and Docker Compose
+- Node.js 20
 
-[PostGIS Queries](docs/Database/postgisQueries.md)
- 
+### Run locally
+
+```bash
+git clone https://github.com/sahithnulu/route-explorer
+cd route-explorer
+docker-compose up -d
+cd backend && npm install && npm run dev
+cd ../frontend && npm install && npm run dev
+```
+
+The backend runs at `http://localhost:3000` and the frontend at `http://localhost:5173`.
+
+### Run tests
+
+```bash
+cd backend && npm test
+```
+
+---
+
+## Documentation
+
+**Architecture**
+- [High-level architecture](docs/Architecture/architecture.md)
+- [AWS infrastructure](docs/Architecture/infrastructure.md)
+- [System design](docs/Architecture/systemDesign.md)
+- [Product requirements](docs/Architecture/prd.md)
+- [Use case scenarios](docs/Architecture/useCases.md)
+- [Real-time GPS data flow](docs/Architecture/dataFlow.md)
+
+**Algorithm**
+- [Route planning algorithm](docs/Architecture/algorithm.md)
+
+**Database**
+- [Database schema](docs/Database/databaseSchema.md)
+- [Entity relationship diagram](docs/Database/erd.md)

@@ -75,6 +75,6 @@ The undiscovered route uses the same algorithm as Dijkstra but adds a **coverage
 
 **Haversine heuristic (true A\*)**: add `haversine(currentNode, destination)` as a heuristic alongside the coverage penalty. This would guide the undiscovered route search toward the destination instead of exploring in all directions, making it faster without changing the output.
 
-**Static road graph**: the graph is a snapshot of OSM data from July 2026. New roads or changes aren't reflected until the import script is re-run. A weekly scheduled import using AWS EventBridge would keep the data current.
+**Static road graph**: the graph is a snapshot of OSM data from October 2026. New roads or changes aren't reflected until the import script is re-run. A weekly scheduled import using AWS EventBridge would keep the data current.
 
 **No turn restrictions**: OSM encodes one-way streets and turn restrictions but the current implementation treats all roads as bidirectional. A production routing engine would respect these.

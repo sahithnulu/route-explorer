@@ -50,7 +50,7 @@
 1. User opens the app
 2. User presses the Start button
 3. GPS begins tracking the user's location
-4. The App draws the route on the map in real time as the user rides
+4. The app draws the route on the map in real time as the user rides
 5. User presses Stop
 6. Ride is saved with distance and duration
 
@@ -105,7 +105,7 @@
 1. User enters a destination on the map
 2. User clicks "Fastest Route"
 3. Dijkstra's algorithm computes the shortest path
-4. Route renders on the map in blue
+4. Route renders on the map in blue alongside the undiscovered route
 5. User sees distance and estimated time
 
 **Extensions:**
@@ -123,11 +123,10 @@
 **Main Success Scenario:**
 1. User enters a destination on the map
 2. User clicks "Undiscovered Route"
-3. A* algorithm computes a path prioritizing unridden roads
-4. Route renders on the map in orange alongside the fastest route
-5. User sees the percentage of the route that is undiscovered
+3. Modified Dijkstra algorithm computes a path prioritizing unridden roads
+4. Route renders on the map in red alongside the fastest route in blue
+5. User sees distance and estimated time
 
 **Extensions:**
 - All roads to destination have already been ridden → returns least-ridden path
 - No path exists between start and destination → show error
-

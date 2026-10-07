@@ -36,9 +36,8 @@ Ride history
 Coverage
 
 6. As a rider, I want to see all the roads I've ever ridden merged into a single coverage layer on the map so I can see at a glance where I've been and where I haven't
-7. As a rider, I want to see what percentage of my city's roads I've explored so I have a goal to work towards
 
 Route planning
 
-8. As a rider, I want to enter a destination and get the fastest route there so I can navigate efficiently when I need to
-9. As a rider, I want to get an alternative route that prioritizes roads I've never ridden so I can discover new parts of my city on the way to my destination
+7. As a rider, I want to enter a destination and get the fastest route there so I can navigate efficiently when I need to
+8. As a rider, I want to get an alternative route that prioritizes roads I've never ridden so I can discover new parts of my city on the way to my destination
