@@ -1,68 +1,90 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import helmet from "../assets/helmet.png";
+import "../styles/auth.css";
 
 export default function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
 
     const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
     });
 
-    let data
+    let data;
     try {
-        data = await res.json()
+      data = await res.json();
     } catch {
-        setError('Something went wrong, please try again')
-        return
+      setError("Something went wrong, please try again");
+      return;
     }
 
     if (res.ok) {
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
-        navigate("/");
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      navigate("/");
     } else {
-        setError(data.error || "Invalid email or password");
+      setError(data.error || "Invalid email or password");
     }
-    }
+  }
 
-    return (
-    <div>
-        <h1>Log In</h1>
+  return (
+    <div className="auth-page">
+      <div className="auth-wrapper">
+        <div className="auth-logo">
+          <img className="auth-logo-img" src={helmet} alt="helmet" />
+          <span className="auth-logo-text">Route<span>Explorer</span></span>
+        </div>
 
-        <form onSubmit={handleSubmit}>
-        <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            required
-        />
+        <div className="auth-card">
+          <div className="auth-card-header">
+            <h1>Welcome back</h1>
+            <p>Sign in to continue tracking your routes</p>
+          </div>
 
-        <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            required
-        />
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <div className="auth-field">
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                required
+              />
+            </div>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+            <div className="auth-field">
+              <label htmlFor="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+              />
+            </div>
 
-        <button type="submit">Log In</button>
-        </form>
+            {error && <p className="auth-error">{error}</p>}
 
-        <p>
-        Don't have an account? <Link to="/register">Register</Link>
-        </p>
+            <button className="auth-submit" type="submit">Log In</button>
+          </form>
+
+          <div className="auth-footer">
+            Don't have an account? <Link to="/register">Register</Link>
+          </div>
+        </div>
+      </div>
     </div>
-    );
-}   
+  );
+}
