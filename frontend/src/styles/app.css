@@ -357,6 +357,22 @@
   z-index: 1;
 }
 
+.rh-delete-btn {
+  background: none;
+  border: none;
+  color: var(--app-fg-muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 5px;
+  transition: background 0.12s, color 0.12s;
+  flex-shrink: 0;
+}
+.rh-delete-btn:hover {
+  background: rgba(248, 113, 113, 0.15);
+  color: var(--app-error);
+}
+
 .rh-panel-header h3 {
   margin: 0;
   font-family: var(--font-display);

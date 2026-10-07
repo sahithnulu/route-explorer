@@ -142,5 +142,31 @@ rideRouter.get('/rides/:id', authenticateToken, async(req, res) => {
     }
 });
 
+// Deletes a ride and its route_points (cascade), removing it from coverage
+rideRouter.delete('/rides/:id', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.userId
+        const rideId = req.params.id
+
+        // Verify ownership first
+        const check = await pool.query(
+            'SELECT id FROM rides WHERE id = $1 AND user_id = $2',
+            [rideId, userId]
+        )
+        if (check.rows.length === 0) {
+            return res.status(404).json({ error: `Ride with id ${rideId} not found` })
+        }
+
+        // Delete route_points first (no cascade), then the ride
+        await pool.query('DELETE FROM route_points WHERE ride_id = $1', [rideId])
+        await pool.query('DELETE FROM rides WHERE id = $1', [rideId])
+
+        return res.status(200).json({ message: 'Ride deleted successfully' })
+
+    } catch (error) {
+        console.error('Error deleting ride', error)
+        return res.status(500).json({ error: 'Internal server error' })
+    }
+})
 
 export default rideRouter

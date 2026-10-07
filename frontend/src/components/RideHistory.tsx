@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import L from 'leaflet'
-import { getRides, getRide } from '../api/rides'
+import { getRides, getRide, deleteRide } from '../api/rides'
 import type { Ride } from '../types'
 
 interface RideHistoryProps {
@@ -35,6 +35,19 @@ const RideHistory = ({ mapRef, onViewRide, onClose }: RideHistoryProps) => {
     }
     setShowHistory(false)
     onClose()
+  }
+
+  // Removes a ride from the DB, clears it from the map if it was selected, reloads the list.
+  // Coverage updates automatically since it queries route_points live.
+  const handleDelete = async (e: React.MouseEvent, rideId: string) => {
+    e.stopPropagation() // don't trigger viewRideOnMap
+    await deleteRide(rideId)
+    if (selectedLayer) {
+      mapRef.current?.removeLayer(selectedLayer)
+      setSelectedLayer(null)
+    }
+    onClose() // reload coverage on the map
+    loadRides()
   }
 
   // Fetches a specific ride's GPS points and draws the route on the map in red.
@@ -83,10 +96,17 @@ const RideHistory = ({ mapRef, onViewRide, onClose }: RideHistoryProps) => {
                 className="rh-ride-item"
                 onClick={() => viewRideOnMap(ride.id)}
               >
-                <div className="rh-ride-date">
-                  {new Date(ride.started_at).toLocaleDateString('en-CA', {
-                    weekday: 'short', month: 'short', day: 'numeric'
-                  })}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div className="rh-ride-date">
+                    {new Date(ride.started_at).toLocaleDateString('en-CA', {
+                      weekday: 'short', month: 'short', day: 'numeric'
+                    })}
+                  </div>
+                  <button
+                    className="rh-delete-btn"
+                    onClick={e => handleDelete(e, ride.id)}
+                    title="Delete ride"
+                  >✕</button>
                 </div>
                 <div className="rh-ride-meta">
                   <span>📍 {ride.distance_metres ? (ride.distance_metres / 1000).toFixed(2) : '0.00'} km</span>

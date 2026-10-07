@@ -157,6 +157,51 @@ describe('GET /rides/coverage', () => {
     })
 })
 
+describe('DELETE /rides/:id', () => {
+
+    let rideId: string
+
+    // Create a ride to delete before testing
+    beforeAll(async () => {
+        const createRideResponse = await request(app)
+            .post('/rides')
+            .set('Authorization', `Bearer ${accessToken}`)
+        
+        rideId = createRideResponse.body.rideId
+    })
+
+    it('returns 200 and deletes the ride', async () => {
+        const deleteRideResponse = await request(app)
+            .delete(`/rides/${rideId}`)
+            .set('Authorization', `Bearer ${accessToken}`)
+        
+        expect(deleteRideResponse.status).toBe(200)
+    })
+
+    it('returns 404 since ride no longer exists', async () => {
+        const deleteRideResponse = await request(app)
+            .delete(`/rides/${rideId}`)
+            .set('Authorization', `Bearer ${accessToken}`)
+        
+        expect(deleteRideResponse.status).toBe(404)
+    })
+
+    it('returns 404 for a ride that never existed', async () => {
+        const deleteRideResponse = await request(app)
+            .delete(`/rides/00000000-0000-0000-0000-000000000000`)
+            .set('Authorization', `Bearer ${accessToken}`)
+        
+        expect(deleteRideResponse.status).toBe(404)
+    })
+
+    it('returns 401 since no token is provided', async () => {
+        const deleteRideResponse = await request(app)
+            .delete(`/rides/${rideId}`)
+        
+        expect(deleteRideResponse.status).toBe(401)
+    })
+})
+
 afterAll(async () => {
     const pool = (await import('../db')).default
     

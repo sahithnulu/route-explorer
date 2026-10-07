@@ -20,3 +20,7 @@ export const getRide = async (rideId: string): Promise<{ ride: Ride, geoJSON: Ge
   const res = await apiFetch(`/rides/${rideId}`)
   return res.json()
 }
+
+export const deleteRide = async (rideId: string): Promise<void> => {
+  await apiFetch(`/rides/${rideId}`, { method: 'DELETE' })
+}
