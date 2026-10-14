@@ -9,6 +9,7 @@ The app also helps riders plan their next ride, offering both the fastest route 
 No app install needed. Just open it on your phone, press Start, and ride.
 
 **[Live Demo](https://route-explorer.online/)** —> log in with `demo@routeexplorer.com` / `password123`
+> **Note:** The live demo is currently offline. The app can be run locally using the setup instructions below.
 
 ---
 
